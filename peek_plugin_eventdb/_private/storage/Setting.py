@@ -255,6 +255,6 @@ globalProperties = {}
 def globalSetting(ormSession, key=None, value=None):
     return _getSetting(ormSession, "Global", globalProperties, key=key, value=value)
 
-
-VALUE_UPDATER_ENABLED = PropertyKey('Value Updater Enabled', True,
-                                    propertyDict=globalProperties)
+#
+# VALUE_UPDATER_ENABLED = PropertyKey('Value Updater Enabled', True,
+#                                     propertyDict=globalProperties)

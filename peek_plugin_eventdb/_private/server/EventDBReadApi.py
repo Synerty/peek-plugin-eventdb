@@ -6,10 +6,9 @@ from peek_plugin_base.storage.LoadPayloadPgUtil import getTuplesPayloadBlocking,
     LoadPayloadTupleResult
 from peek_plugin_eventdb._private.server.controller.EventDBController import \
     EventDBController
-from peek_plugin_eventdb._private.storage.EventDBItem import EventDBItem
 from peek_plugin_eventdb._private.storage.EventDBModelSet import getOrCreateEventDBModelSet
 from peek_plugin_eventdb.server.EventDBReadApiABC import EventDBReadApiABC
-from peek_plugin_eventdb.tuples.EventDBDisplayValueTuple import EventDBDisplayValueTuple
+from peek_plugin_eventdb.tuples.EventDBEventTuple import EventDBEventTuple
 from rx.subjects import Subject
 from sqlalchemy import select
 from twisted.internet.defer import Deferred
@@ -97,7 +96,7 @@ def qryChunk(modelSetKey: str, offset: int, limit: int, keyList: List[str],
         return getTuplesPayloadBlocking(
             dbSessionCreator,
             sql,
-            EventDBDisplayValueTuple.sqlCoreLoad,
+            EventDBEventTuple.sqlCoreLoad,
             fetchSize=limit
         )
 
