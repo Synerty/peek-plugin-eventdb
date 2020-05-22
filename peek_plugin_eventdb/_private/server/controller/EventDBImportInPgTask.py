@@ -21,7 +21,7 @@ class EventDBImportInPgTask:
     @classmethod
     def importEvents(cls, plpy,
                      modelSetKey: str,
-                     eventsEncodedPayload: bytes) -> None:
+                     eventsEncodedPayload: bytes) -> int:
 
         if EventDBEventTuple.tupleName() not in TUPLE_TYPES_BY_NAME:
             loadPublicTuples()
@@ -35,19 +35,23 @@ class EventDBImportInPgTask:
         # Now insert the events
         cls._loadEvents(plpy, events, modelSetId)
 
+        return len(events)
+
     @classmethod
     def deleteEvents(cls, plpy,
                      modelSetKey: str,
-                     eventKeys: List[str]) -> None:
+                     eventKeys: List[str]) -> int:
 
         # Get the model set id
         modelSetId = cls._getModelSetId(plpy, modelSetKey, createIfMissing=False)
         if modelSetId is None:
             plpy.debug("ModelSet with key %s doesn't exist" % modelSetKey)
-            return
+            return 0
 
         # Now insert the events
         cls._deleteEvents(plpy, modelSetId, eventKeys)
+
+        return len(eventKeys)
 
     @classmethod
     def _getModelSetId(cls, plpy, modelSetKey, createIfMissing) -> Optional[int]:

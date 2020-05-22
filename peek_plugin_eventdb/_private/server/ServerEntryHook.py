@@ -1,13 +1,13 @@
 import logging
 
+from twisted.internet.defer import inlineCallbacks
+from vortex.DeferUtil import deferToThreadWrapWithLogger
+
 from peek_plugin_base.server.PluginServerEntryHookABC import PluginServerEntryHookABC
 from peek_plugin_base.server.PluginServerStorageEntryHookABC import \
     PluginServerStorageEntryHookABC
 from peek_plugin_base.server.PluginServerWorkerEntryHookABC import \
     PluginServerWorkerEntryHookABC
-from twisted.internet.defer import inlineCallbacks
-from vortex.DeferUtil import deferToThreadWrapWithLogger
-
 from peek_plugin_eventdb._private.server.controller.EventDBController import \
     EventDBController
 from peek_plugin_eventdb._private.server.controller.EventDBImportController import \
@@ -106,9 +106,9 @@ class ServerEntryHook(PluginServerEntryHookABC, PluginServerStorageEntryHookABC,
 
         # ----------------
         # Create the Import Controller
-        eventdbImportController = EventDBImportController(self.dbSessionCreator)
+        eventdbImportController = EventDBImportController(self.dbSessionCreator,
+                                                          statusController)
         self._loadedObjects.append(eventdbImportController)
-
 
         # ----------------
         # Initialise the API object that will be shared with other plugins

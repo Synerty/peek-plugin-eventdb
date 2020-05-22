@@ -6,10 +6,9 @@ import {eventdbTuplePrefix} from "@peek/peek_plugin_eventdb/_private/PluginNames
 export class AdminStatusTuple extends Tuple {
     public static readonly tupleName = eventdbTuplePrefix + "AdminStatusTuple";
 
-    rawValueQueueStatus: boolean;
-    rawValueQueueSize: number;
-    rawValueProcessedTotal: number;
-    rawValueLastError: string;
+    addedEvents: number;
+    removedEvents: number;
+    lastActivity: Date;
 
     constructor() {
         super(AdminStatusTuple.tupleName)
