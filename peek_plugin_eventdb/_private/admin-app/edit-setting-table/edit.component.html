@@ -1,4 +1,10 @@
 <div class="panel panel-default">
+    <div class="panel-heading"><span> </span>
+        <div class="btn-toolbar pull-right">
+            <button nz-button (click)='saveClicked()'>Save</button>
+            <button nz-button (click)='resetClicked()'>Reset</button>
+        </div>
+    </div>
     <div class="panel-body">
         <form autocomplete="off" novalidate>
             <table class="table">
@@ -37,16 +43,6 @@
                 </tr>
             </table>
 
-            <div class="btn-toolbar">
-                <div class="btn-group">
-                    <div class="btn btn-default" (click)='saveClicked()'>
-                        Save
-                    </div>
-                    <div class="btn btn-default" (click)='resetClicked()'>
-                        Reset
-                    </div>
-                </div>
-            </div>
         </form>
     </div>
 </div>

@@ -12,13 +12,13 @@ logger = logging.getLogger(__name__)
 
 
 @addTupleType
-class EventDBEvent(Tuple, DeclarativeBase):
+class EventDBEventTable(Tuple, DeclarativeBase):
     __tablename__ = 'EventDBEvent'
-    __tupleType__ = eventdbTuplePrefix + __tablename__
+    __tupleType__ = eventdbTuplePrefix + 'EventDBEventTable'
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
 
-    dateTime = Column(DateTime(True), nullable=False)
+    dateTime = Column(DateTime(True), primary_key=True, nullable=False)
 
     value = Column(JSONB, nullable=False)
 
@@ -29,6 +29,5 @@ class EventDBEvent(Tuple, DeclarativeBase):
                         nullable=False)
 
     __table_args__ = (
-        Index("idx_EventDBEvent_modelSetId", modelSetId, unique=False),
-        Index("idx_EventDBEvent_key", key, unique=True),
+        Index("idx_EventDBEvent_modelSetId_key", modelSetId, key, unique=False),
     )

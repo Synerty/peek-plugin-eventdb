@@ -5,7 +5,7 @@ from sqlalchemy.dialects import postgresql
 from vortex.Payload import Payload
 from vortex.Tuple import TUPLE_TYPES_BY_NAME
 
-from peek_plugin_eventdb._private.storage.EventDBModelSet import EventDBModelSet
+from peek_plugin_eventdb._private.storage.EventDBModelSetTable import EventDBModelSetTable
 from peek_plugin_eventdb.tuples import loadPublicTuples
 from peek_plugin_eventdb.tuples.EventDBEventTuple import EventDBEventTuple
 
@@ -55,7 +55,7 @@ class EventDBImportInPgTask:
 
     @classmethod
     def _getModelSetId(cls, plpy, modelSetKey, createIfMissing) -> Optional[int]:
-        msTbl = EventDBModelSet.__table__
+        msTbl = EventDBModelSetTable.__table__
         qryModelSetSql = str(msTbl
                              .select()
                              .where(msTbl.c.key == modelSetKey)

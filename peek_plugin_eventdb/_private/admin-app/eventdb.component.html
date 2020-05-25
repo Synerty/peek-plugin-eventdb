@@ -1,38 +1,32 @@
 <div class="container">
-    <!-- Nav tabs -->
-    <ul class="nav nav-tabs" role="tablist">
-        <!-- Home Tab -->
-        <li role="presentation" class="active">
-            <a href="#home" aria-controls="home" role="tab" data-toggle="tab">Home</a>
-        </li>
-        <!-- Edit String Int Tab -->
-        <li role="presentation">
-            <a href="#adminStatus" aria-controls="adminStatus" role="tab"
-               data-toggle="tab">Status</a>
-        </li>
-        <!-- Edit Settings Tab -->
-        <li role="presentation">
-            <a href="#editSetting" aria-controls="editSetting" role="tab"
-               data-toggle="tab">Edit Settings</a>
-        </li>
-    </ul>
-
-    <!-- Tab panes -->
-    <div class="tab-content">
-        <!-- Edit Settings Tab -->
-        <div role="tabpanel" class="tab-pane" id="editSetting">
-            <pl-eventdb-edit-setting></pl-eventdb-edit-setting>
-        </div>
-        <!-- Edit String Int Tab -->
-        <div role="tabpanel" class="tab-pane" id="adminStatus">
-            <pl-eventdb-status></pl-eventdb-status>
-        </div>
-        <!-- Home Tab -->
-        <div role="tabpanel" class="tab-pane active" id="home">
+    <nz-tabset>
+        <nz-tab nzTitle="Home">
             <h1 class="text-center">EventDB</h1>
-            <p>The EventDB plugin stores "live" key/values,
-                these values can be updated and read very frequently.</p>
-        </div>
+            <p>The EventDB plugin stores alarms and events using flexible json data values
+                and displays them based on Admin configurable properties.
+            </p>
 
-    </div>
+            <p>
+                The alarms and events are stored using
+                <a href="https://www.timescale.com">https://www.timescale.com/</a>, which
+                means it's capable of holding a large amount of alarms and events.
+            </p>
+        </nz-tab>
+
+        <!-- Edit String Int Tab -->
+        <nz-tab nzTitle="Status">
+            <pl-eventdb-status></pl-eventdb-status>
+        </nz-tab>
+
+        <!-- Edit Property Names Tab -->
+        <nz-tab nzTitle="Edit Properties">
+            <pl-eventdb-edit-property></pl-eventdb-edit-property>
+        </nz-tab>
+
+        <!-- Edit Status Tab -->
+        <nz-tab nzTitle="Edit General Settings">
+            <pl-eventdb-edit-setting></pl-eventdb-edit-setting>
+        </nz-tab>
+
+    </nz-tabset>
 </div>

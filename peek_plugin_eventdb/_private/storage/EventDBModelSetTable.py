@@ -7,9 +7,9 @@ from .DeclarativeBase import DeclarativeBase
 
 
 @addTupleType
-class EventDBModelSet(Tuple, DeclarativeBase):
+class EventDBModelSetTable(Tuple, DeclarativeBase):
     __tablename__ = 'EventDBModelSet'
-    __tupleType__ = eventdbTuplePrefix + __tablename__
+    __tupleType__ = eventdbTuplePrefix + 'EventDBModelSetTable'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     key = Column(String, nullable=False, unique=True)
@@ -19,10 +19,11 @@ class EventDBModelSet(Tuple, DeclarativeBase):
     propsJson = Column(String)
 
 
-def getOrCreateEventDBModelSet(session, modelSetKey: str) -> EventDBModelSet:
-    qry = session.query(EventDBModelSet).filter(EventDBModelSet.key == modelSetKey)
+def getOrCreateEventDBModelSet(session, modelSetKey: str) -> EventDBModelSetTable:
+    qry = session.query(EventDBModelSetTable) \
+        .filter(EventDBModelSetTable.key == modelSetKey)
     if not qry.count():
-        session.add(EventDBModelSet(key=modelSetKey, name=modelSetKey))
+        session.add(EventDBModelSetTable(key=modelSetKey, name=modelSetKey))
         session.commit()
 
     return qry.one()

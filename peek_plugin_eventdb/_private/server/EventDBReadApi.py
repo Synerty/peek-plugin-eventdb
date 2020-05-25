@@ -6,7 +6,7 @@ from peek_plugin_base.storage.LoadPayloadPgUtil import getTuplesPayloadBlocking,
     LoadPayloadTupleResult
 from peek_plugin_eventdb._private.server.controller.EventDBController import \
     EventDBController
-from peek_plugin_eventdb._private.storage.EventDBModelSet import getOrCreateEventDBModelSet
+from peek_plugin_eventdb._private.storage.EventDBModelSetTable import getOrCreateEventDBModelSet
 from peek_plugin_eventdb.server.EventDBReadApiABC import EventDBReadApiABC
 from peek_plugin_eventdb.tuples.EventDBEventTuple import EventDBEventTuple
 from rx.subjects import Subject
