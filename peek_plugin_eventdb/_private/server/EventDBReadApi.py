@@ -24,12 +24,7 @@ class EventDBReadApi(EventDBReadApiABC):
         self._dbSessionCreator = None
         self._dbEngine = None
 
-        self._prioritySubject = defaultdict(Subject)
-        self._pollSubject = defaultdict(Subject)
-        self._additionsSubject = defaultdict(Subject)
-        self._deletionsSubject = defaultdict(Subject)
-        self._rawValueUpdatesSubject = defaultdict(Subject)
-        self._displayValueUpdatesSubject = defaultdict(Subject)
+        self._newEventsSubject = defaultdict(Subject)
 
     def setup(self, eventdbController: EventDBController,
               dbSessionCreator,
@@ -41,64 +36,5 @@ class EventDBReadApi(EventDBReadApiABC):
     def shutdown(self):
         pass
 
-    def priorityKeysObservable(self, modelSetName: str) -> Subject:
-        return self._prioritySubject[modelSetName]
-
-    def pollKeysObservable(self, modelSetName: str) -> Subject:
-        return self._pollSubject[modelSetName]
-
-    def itemAdditionsObservable(self, modelSetName: str) -> Subject:
-        return self._additionsSubject[modelSetName]
-
-    def itemDeletionsObservable(self, modelSetName: str) -> Subject:
-        return self._deletionsSubject[modelSetName]
-
-    def bulkLoadDeferredGenerator(self, modelSetName: str,
-                                  keyList: Optional[List[str]] = None,
-                                  chunkSize: int = 2500) -> Deferred:
-        offset = 0
-        limit = chunkSize
-        while True:
-            yield qryChunk(modelSetName, offset, limit, keyList, self._dbSessionCreator)
-
-            offset += limit
-
-    def rawValueUpdatesObservable(self, modelSetName: str) -> Subject:
-        return self._rawValueUpdatesSubject[modelSetName]
-
-    def displayValueUpdatesObservable(self, modelSetName: str) -> Subject:
-        return self._displayValueUpdatesSubject[modelSetName]
-
-
-@deferToThreadWrapWithLogger(logger)
-def qryChunk(modelSetKey: str, offset: int, limit: int, keyList: List[str],
-             dbSessionCreator) -> LoadPayloadTupleResult:
-    # If they've given us an empty key list, that is what they will get back
-    if keyList is not None and not keyList:
-        return LoadPayloadTupleResult(encodedPayload=None, count=0)
-
-    table = EventDBItem.__table__
-    cols = [table.c.key, table.c.dataType, table.c.rawValue, table.c.displayValue]
-
-    session = dbSessionCreator()
-    try:
-        eventdbModelSet = getOrCreateEventDBModelSet(session, modelSetKey)
-
-        sql = select(cols) \
-            .order_by(table.c.id) \
-            .where(table.c.modelSetId == eventdbModelSet.id)
-
-        if keyList is not None:
-            sql = sql.where(table.c.key.in_(keyList))
-
-        sql = sql.offset(offset).limit(limit)
-
-        return getTuplesPayloadBlocking(
-            dbSessionCreator,
-            sql,
-            EventDBEventTuple.sqlCoreLoad,
-            fetchSize=limit
-        )
-
-    finally:
-        session.close()
+    def newEventsObservable(self, modelSetKey: str) -> Subject:
+        return self._newEventsSubject[modelSetKey]

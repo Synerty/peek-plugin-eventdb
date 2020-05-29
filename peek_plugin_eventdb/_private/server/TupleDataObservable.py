@@ -7,11 +7,17 @@ from peek_plugin_eventdb._private.server.controller.AdminStatusController import
     AdminStatusController
 from peek_plugin_eventdb._private.server.tuple_providers.AdminStatusTupleProvider import \
     AdminStatusTupleProvider
+from peek_plugin_eventdb._private.server.tuple_providers.EventDBEventTupleProvider import \
+    EventDBEventTupleProvider
 from peek_plugin_eventdb._private.server.tuple_providers.EventDBModelSetTableTupleProvider import \
     EventDBModelSetTableTupleProvider
+from peek_plugin_eventdb._private.server.tuple_providers.EventDBPropertyTupleProvider import \
+    EventDBPropertyTupleProvider
 from peek_plugin_eventdb._private.storage.EventDBModelSetTable import EventDBModelSetTable
 from peek_plugin_eventdb._private.tuples.AdminStatusTuple import \
     AdminStatusTuple
+from peek_plugin_eventdb.tuples.EventDBEventTuple import EventDBEventTuple
+from peek_plugin_eventdb.tuples.EventDBPropertyTuple import EventDBPropertyTuple
 
 
 def makeTupleDataObservableHandler(ormSessionCreator: DbSessionCreator,
@@ -31,10 +37,17 @@ def makeTupleDataObservableHandler(ormSessionCreator: DbSessionCreator,
         observableName=eventdbObservableName,
         additionalFilt=eventdbFilt)
 
-    # # Register TupleProviders here
+    # Admin Tuple Observers
     tupleObservable.addTupleProvider(AdminStatusTuple.tupleName(),
                                      AdminStatusTupleProvider(adminStatusController))
 
     tupleObservable.addTupleProvider(EventDBModelSetTable.tupleName(),
                                      EventDBModelSetTableTupleProvider(ormSessionCreator))
+
+    # UI Tuple Observers
+    tupleObservable.addTupleProvider(EventDBEventTuple.tupleName(),
+                                     EventDBEventTupleProvider(ormSessionCreator))
+
+    tupleObservable.addTupleProvider(EventDBPropertyTuple.tupleName(),
+                                     EventDBPropertyTupleProvider(ormSessionCreator))
     return tupleObservable

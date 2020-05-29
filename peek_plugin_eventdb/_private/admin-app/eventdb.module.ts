@@ -35,7 +35,7 @@ import {
     eventdbFilt,
     eventdbObservableName,
     eventdbTupleOfflineServiceName
-} from "@peek/peek_plugin_eventdb/_private";
+} from "./PluginNames";
 import {EditPropertyComponent} from "./edit-property-table/edit.component";
 
 export function tupleActionPushNameServiceFactory() {

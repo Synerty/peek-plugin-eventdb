@@ -1,5 +1,5 @@
 import {addTupleType, Tuple} from "@synerty/vortexjs";
-import {eventdbTuplePrefix} from "@peek/peek_plugin_eventdb/_private/PluginNames";
+import {eventdbTuplePrefix} from "../PluginNames";
 import {EventDBPropertyValueTableTuple} from "./EventDBPropertyValueTableTuple";
 
 

@@ -1,0 +1,20 @@
+<nz-table #eventsTable [nzData]="events" nzSize="small"
+          nzShowSizeChanger="true">
+    <thead>
+    <th>Date</th>
+    <th>AlarmId</th>
+    <th>Comp ID</th>
+    <th>Message</th>
+    </thead>
+    <tbody>
+    <tr *ngFor="let item of eventsTable.data"
+        (mouseenter)="tooltipEnter($event, item) "
+        (mouseleave)="tooltipExit($event, item)"
+        (click)="showSummaryPopup($event, item) ">
+        <td>{{ item.dateTime }}</td>
+        <td>{{ item.key }}</td>
+        <td>{{ item.value.component_id }}</td>
+        <td>{{ item.value.message }}</td>
+    </tr>
+    </tbody>
+</nz-table>

@@ -16,7 +16,11 @@
         "agent",
         "worker",
         "doc-dev",
-        "doc-admin"
+        "doc-admin",
+        "client",
+        "mobile",
+        "desktop",
+        "doc-user"
     ],
     "doc-dev": {
         "docDir": "doc-dev",
@@ -27,7 +31,13 @@
         "docDir": "doc-admin",
         "docRst": "index.rst"
     },
+    "doc-user": {
+        "docDir": "doc-user",
+        "docRst": "index.rst"
+    },
     "server": {
+    },
+    "client": {
     },
     "storage": {
         "alembicDir": "_private/alembic"
@@ -35,11 +45,59 @@
     "admin": {
         "showHomeLink": true,
         "appDir": "_private/admin-app",
-        "appModule": "eventdb.module#EventDBModule",
-        "moduleDir": "plugin-module"
+        "appModule": "eventdb.module#EventDBModule"
     },
     "agent": {
     },
     "worker": {
+    },
+    "mobile": {
+        "titleBarText": "Alarms / Events",
+        "showHomeLink": true,
+        "appDir": "_private/both-app",
+        "appModule": "eventdb.module#EventDBModule",
+        "assetDir": "_private/both-assets",
+        "icon": "/assets/peek_plugin_object_popup/icon.png",
+        "moduleDir": "plugin-module",
+        "rootServices": [
+            {
+                "file": "_private/EventDBTupleService",
+                "class": "EventDBTupleService"
+            },
+            {
+                "file": "EventDBService",
+                "class": "EventDBService"
+            },
+            {
+                "file": "_private/PrivateEventDBService",
+                "class": "PrivateEventDBService",
+                "persistent": true
+            }
+        ]
+    },
+    "desktop": {
+        "titleBarText": "Alarms / Events",
+        "showHomeLink": true,
+        "appDir": "_private/both-app",
+        "appModule": "eventdb.module#EventDBModule",
+        "assetDir": "_private/both-assets",
+        "icon": "/assets/peek_plugin_object_popup/icon.png",
+        "moduleDir": "plugin-module",
+        "rootServices": [
+            {
+                "file": "_private/EventDBTupleService",
+                "class": "EventDBTupleService"
+            },
+            {
+                "file": "EventDBService",
+                "class": "EventDBService",
+                "useExistingClass": "PrivateEventDBService"
+            },
+            {
+                "file": "_private/PrivateEventDBService",
+                "class": "PrivateEventDBService",
+                "persistent": true
+            }
+        ]
     }
 }

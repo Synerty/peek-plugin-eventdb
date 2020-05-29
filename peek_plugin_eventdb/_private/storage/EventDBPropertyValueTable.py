@@ -6,6 +6,7 @@ from vortex.Tuple import addTupleType, Tuple
 from peek_plugin_eventdb._private.PluginNames import eventdbTuplePrefix
 from .DeclarativeBase import DeclarativeBase
 from .EventDBPropertyTable import EventDBPropertyTable
+from ...tuples.EventDBPropertyValueTuple import EventDBPropertyValueTuple
 
 
 @addTupleType
@@ -26,3 +27,10 @@ class EventDBPropertyValueTable(Tuple, DeclarativeBase):
         Index("idx_EventDBPropVal_name", propertyId, name, unique=True),
         Index("idx_EventDBPropVal_value", propertyId, value, unique=True),
     )
+
+    def toTuple(self) -> EventDBPropertyValueTuple:
+        return EventDBPropertyValueTuple(
+            name=self.name,
+            value=self.value,
+            comment=self.comment
+        )

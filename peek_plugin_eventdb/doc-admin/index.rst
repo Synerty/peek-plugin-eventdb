@@ -2,9 +2,7 @@
 Administration
 ==============
 
-EventDB stores the SCADA + calculated "live" values.
-
-An example use of the EventDB is driving dynamic updates for the Peek Diagram.
+EventDB stores historical and current Alarms and Events.
 
 .. toctree::
     :maxdepth: 3

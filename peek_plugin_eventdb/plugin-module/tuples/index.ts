@@ -1,4 +1,4 @@
-export {EventDBPropertyTuple} from "./EventDBPropertyTuple";
-export {EventDBPropertyValueTuple} from "./EventDBPropertyValueTuple";
 export {EventDBEventTuple} from "./EventDBEventTuple";
-
+export {EventDBPropertyValueTuple} from "./EventDBPropertyValueTuple";
+export {EventDBPropertyTuple} from "./EventDBPropertyTuple";
+export {EventDBPropertyCriteriaTuple} from "./EventDBPropertyCriteriaTuple";

@@ -8,7 +8,7 @@ import {
     TupleSelector,
     VortexService
 } from "@synerty/vortexjs";
-import {eventdbFilt} from "@peek/peek_plugin_eventdb/_private";
+import {eventdbFilt} from "../PluginNames";
 import {EventDBPropertyTableTuple} from "../tuples/EventDBPropertyTableTuple";
 import {EventDBModelSetTableTuple} from "../tuples/EventDBModelSetTableTuple";
 import {EventDBPropertyValueTableTuple} from "../tuples/EventDBPropertyValueTableTuple";

@@ -6,6 +6,7 @@ from vortex.Tuple import addTupleType, Tuple, TupleField
 from peek_plugin_eventdb._private.PluginNames import eventdbTuplePrefix
 from .DeclarativeBase import DeclarativeBase
 from .EventDBModelSetTable import EventDBModelSetTable
+from ...tuples.EventDBPropertyTuple import EventDBPropertyTuple
 
 
 @addTupleType
@@ -16,7 +17,6 @@ class EventDBPropertyTable(Tuple, DeclarativeBase):
     SHOW_FILTER_AS_FREE_TEXT = 1
     SHOW_FILTER_AS_CHECK_BOXES = 2
     SHOW_FILTER_AS_DROP_DOWN = 3
-
 
     id = Column(Integer, primary_key=True, autoincrement=True)
 
@@ -43,3 +43,18 @@ class EventDBPropertyTable(Tuple, DeclarativeBase):
         Index("idx_EventDBProp_name", modelSetId, key, unique=True),
         Index("idx_EventDBProp_value", modelSetId, name, unique=True),
     )
+
+    def toTuple(self) -> EventDBPropertyTuple:
+        return EventDBPropertyTuple(
+            modelSetKey=self.modelSet.key,
+            key=self.key,
+            name=self.name,
+            order=self.order,
+            comment=self.comment,
+            useForFilter=self.useForFilter,
+            useForDisplay=self.useForDisplay,
+            displayByDefaultOnSummaryView=self.displayByDefaultOnSummaryView,
+            displayByDefaultOnDetailView=self.displayByDefaultOnDetailView,
+            showFilterAs=self.showFilterAs,
+            values=[v.toTuple() for v in self.values],
+        )
