@@ -1,13 +1,13 @@
 import logging
-from typing import Optional, List
-
-from sqlalchemy.dialects import postgresql
-from vortex.Payload import Payload
-from vortex.Tuple import TUPLE_TYPES_BY_NAME
+from datetime import datetime
+from typing import Optional, List, Tuple
 
 from peek_plugin_eventdb._private.storage.EventDBModelSetTable import EventDBModelSetTable
 from peek_plugin_eventdb.tuples import loadPublicTuples
 from peek_plugin_eventdb.tuples.EventDBEventTuple import EventDBEventTuple
+from sqlalchemy.dialects import postgresql
+from vortex.Payload import Payload
+from vortex.Tuple import TUPLE_TYPES_BY_NAME
 
 logger = logging.getLogger(__name__)
 
@@ -21,13 +21,20 @@ class EventDBImportInPgTask:
     @classmethod
     def importEvents(cls, plpy,
                      modelSetKey: str,
-                     eventsEncodedPayload: bytes) -> int:
+                     eventsEncodedPayload: bytes
+                     ) -> Tuple[int, Optional[datetime], Optional[datetime]]:
 
         if EventDBEventTuple.tupleName() not in TUPLE_TYPES_BY_NAME:
             loadPublicTuples()
 
         # Reconstruct the data
         events = Payload().fromEncodedPayload(eventsEncodedPayload).tuples
+        if not events:
+            return 0, None, None
+
+        dates = [e.dateTime for e in events]
+        maxDate = max(dates)
+        minDate = min(dates)
 
         # Get the model set id
         modelSetId = cls._getModelSetId(plpy, modelSetKey, createIfMissing=True)
@@ -35,7 +42,7 @@ class EventDBImportInPgTask:
         # Now insert the events
         cls._loadEvents(plpy, events, modelSetId)
 
-        return len(events)
+        return len(events), maxDate, minDate
 
     @classmethod
     def deleteEvents(cls, plpy,

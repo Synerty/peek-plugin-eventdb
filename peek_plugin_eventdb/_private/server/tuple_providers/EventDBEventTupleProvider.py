@@ -1,25 +1,15 @@
 import logging
 
+from peek_plugin_base.storage.DbConnection import DbSessionCreator
+from peek_plugin_base.storage.RunPyInPg import runPyInPg
+from peek_plugin_eventdb.tuples.EventDBEventTuple import EventDBEventTuple
 from twisted.internet.defer import Deferred, inlineCallbacks
 from vortex.Payload import Payload
-from vortex.Tuple import addTupleType, Tuple, TupleField
 from vortex.TupleSelector import TupleSelector
 from vortex.handler.TupleDataObservableHandler import TuplesProviderABC
 
-from peek_plugin_base.storage.DbConnection import DbSessionCreator
-from peek_plugin_base.storage.RunPyInPg import runPyInPg
-from peek_plugin_eventdb._private.PluginNames import eventdbTuplePrefix
-from peek_plugin_eventdb.tuples.EventDBEventTuple import EventDBEventTuple
-
 logger = logging.getLogger(__name__)
 
-
-@addTupleType
-class _Param(Tuple):
-    __tupleType__ = eventdbTuplePrefix + '_Param'
-
-    filt = TupleField()
-    tupleSelector: TupleSelector = TupleField()
 
 
 class EventDBEventTupleProvider(TuplesProviderABC):
@@ -28,16 +18,15 @@ class EventDBEventTupleProvider(TuplesProviderABC):
 
     @inlineCallbacks
     def makeVortexMsg(self, filt: dict, tupleSelector: TupleSelector) -> Deferred:
-        param = _Param(filt=filt, tupleSelector=tupleSelector)
         return (yield runPyInPg(logger,
                                 self._dbSessionCreator,
                                 self._loadInPg,
-                                param.toJsonDict())).encode()
+                                filt=filt,
+                                tupleSelector=tupleSelector)).encode()
 
     @classmethod
-    def _loadInPg(cls, plpy, paramDict: dict):
-        param = _Param().fromJsonDict(paramDict)
-        selector = param.tupleSelector.selector
+    def _loadInPg(cls, plpy, filt: dict, tupleSelector:TupleSelector):
+        selector = tupleSelector.selector
         modelSetKey = selector.get('modelSetKey')
         criteria = selector.get('criteria', [])
         newestDateTime = selector.get('newestDateTime')
@@ -86,6 +75,6 @@ class EventDBEventTupleProvider(TuplesProviderABC):
                                                 key=row["key"],
                                                 value=row["value"]))
 
-        payloadEnvelope = Payload(filt=param.filt, tuples=tuples).makePayloadEnvelope()
+        payloadEnvelope = Payload(filt=filt, tuples=tuples).makePayloadEnvelope()
         vortexMsg = payloadEnvelope.toVortexMsg()
         return vortexMsg.decode()

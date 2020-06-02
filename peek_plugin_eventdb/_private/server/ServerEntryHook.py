@@ -107,7 +107,8 @@ class ServerEntryHook(PluginServerEntryHookABC, PluginServerStorageEntryHookABC,
         # ----------------
         # Create the Import Controller
         eventdbImportController = EventDBImportController(self.dbSessionCreator,
-                                                          statusController)
+                                                          statusController,
+                                                          tupleObservable)
         self._loadedObjects.append(eventdbImportController)
 
         # ----------------

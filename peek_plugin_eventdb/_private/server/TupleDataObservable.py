@@ -1,3 +1,5 @@
+from peek_plugin_eventdb._private.server.tuple_selector_mappers.NewEventTSUpdateMapper import \
+    NewEventTSUpdateMapper
 from vortex.handler.TupleDataObservableHandler import TupleDataObservableHandler
 
 from peek_plugin_base.storage.DbConnection import DbSessionCreator
@@ -36,6 +38,9 @@ def makeTupleDataObservableHandler(ormSessionCreator: DbSessionCreator,
     tupleObservable = TupleDataObservableHandler(
         observableName=eventdbObservableName,
         additionalFilt=eventdbFilt)
+
+    # Add the tuple selector update mappers
+    tupleObservable.addTupleSelectorUpdateMapper(NewEventTSUpdateMapper())
 
     # Admin Tuple Observers
     tupleObservable.addTupleProvider(AdminStatusTuple.tupleName(),

@@ -3,14 +3,17 @@ from datetime import datetime
 from typing import List
 
 import pytz
-from twisted.internet.defer import Deferred, inlineCallbacks
-
+from peek_plugin_base.storage.DbConnection import DbSessionCreator
 from peek_plugin_base.storage.RunPyInPg import runPyInPg
 from peek_plugin_eventdb._private.server.EventDBReadApi import EventDBReadApi
 from peek_plugin_eventdb._private.server.controller.AdminStatusController import \
     AdminStatusController
 from peek_plugin_eventdb._private.server.controller.EventDBImportInPgTask import \
     EventDBImportInPgTask
+from peek_plugin_eventdb._private.server.tuple_selector_mappers.NewEventTSUpdateMapper import \
+    NewEventsTupleSelector
+from twisted.internet.defer import Deferred, inlineCallbacks
+from vortex.handler.TupleDataObservableHandler import TupleDataObservableHandler
 
 logger = logging.getLogger(__name__)
 
@@ -19,24 +22,33 @@ class EventDBImportController:
     """ EventDB Import Controller
     """
 
-    def __init__(self, dbSessionCreator, statusController: AdminStatusController):
+    def __init__(self, dbSessionCreator: DbSessionCreator,
+                 statusController: AdminStatusController,
+                 tupleObservable: TupleDataObservableHandler):
         self._dbSessionCreator = dbSessionCreator
         self._statusController = statusController
+        self._tupleObservable = tupleObservable
 
     def setReadApi(self, readApi: EventDBReadApi):
         self._readApi = readApi
 
     def shutdown(self):
         self._readApi = None
+        self._tupleObservable = None
 
     @inlineCallbacks
     def importEvents(self, modelSetKey: str,
                      eventsEncodedPayload: str) -> Deferred:
-        count = yield runPyInPg(logger,
-                                self._dbSessionCreator,
-                                EventDBImportInPgTask.importEvents,
-                                modelSetKey,
-                                eventsEncodedPayload)
+        count, maxDate, minDate = yield runPyInPg(logger,
+                                                  self._dbSessionCreator,
+                                                  EventDBImportInPgTask.importEvents,
+                                                  modelSetKey,
+                                                  eventsEncodedPayload)
+
+        # Notify anyone watching the events that new ones have arrived.
+        if count:
+            self._tupleObservable \
+                .notifyOfTupleUpdate(NewEventsTupleSelector(minDate, maxDate))
 
         self._statusController.status.addedEvents += count
         self._statusController.status.lastActivity = datetime.now(pytz.utc)
