@@ -1,5 +1,6 @@
 import logging
 
+from peek_plugin_eventdb.tuples.EventDBPropertyTuple import EventDBPropertyTuple
 from vortex.TupleSelector import TupleSelector
 from vortex.handler.TupleDataObservableHandler import TupleDataObservableHandler
 from vortex.sqla_orm.OrmCrudHandler import OrmCrudHandler, OrmCrudHandlerExtension
@@ -49,12 +50,12 @@ class __ExtUpdateObservable(OrmCrudHandlerExtension):
         return True
 
     def _tellObserver(self, tuple_, tuples, session, payloadFilt):
-        selector = {}
-        # Copy any filter values into the selector
-        # selector["lookupName"] = payloadFilt["lookupName"]
-        tupleSelector = TupleSelector(EventDBPropertyTable.tupleName(),
-                                      selector)
+        tupleSelector = TupleSelector(EventDBPropertyTable.tupleName(), {})
         self._tupleDataObserver.notifyOfTupleUpdate(tupleSelector)
+
+        tupleSelector = TupleSelector(EventDBPropertyTuple.tupleName(), {})
+        self._tupleDataObserver.notifyOfTupleUpdate(tupleSelector)
+
         return True
 
     afterUpdateCommit = _tellObserver

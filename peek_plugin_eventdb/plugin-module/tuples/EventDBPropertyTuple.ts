@@ -57,8 +57,31 @@ export class EventDBPropertyTuple extends Tuple {
     // FOR FILTER and FOR DISPLAY
     // values: the list of values for
     values: EventDBPropertyValueTuple[] | null;
+    // Create a map of the values to speed up conversion for the UI.
+    private nameByValue: { [value: string]: string };
+​
 
     constructor() {
-        super(EventDBPropertyTuple.tupleName)
+        super(EventDBPropertyTuple.tupleName);
+    }
+
+​
+
+    /** Raw Value To User Value
+     *
+     * @param value: The raw value in the data
+     * @return: The user friendly value
+     */
+    rawValToUserVal(value: string): string {
+        // Lazy create the map
+        if (this.nameByValue == null) {
+            this.nameByValue = {};
+            for (let valueTuple of this.values) {
+                this.nameByValue[valueTuple.value] = valueTuple.name;
+            }
+        }
+​
+        // Return the name for the value
+        return this.nameByValue[value];
     }
 }

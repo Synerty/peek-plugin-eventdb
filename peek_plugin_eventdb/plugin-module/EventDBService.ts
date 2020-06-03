@@ -1,8 +1,12 @@
 import {Observable} from "rxjs";
 import {EventDBPropertyCriteriaTuple} from "./tuples/EventDBPropertyCriteriaTuple";
 import {EventDBEventTuple} from "./tuples/EventDBEventTuple";
-import {EventDateTimeRangeI} from "./_private/PrivateEventDBService";
 import {EventDBPropertyTuple} from "./tuples/EventDBPropertyTuple";
+
+export interface EventDateTimeRangeI {
+    oldestDateTime?: Date | null;
+    newestDateTime?: Date | null;
+}
 
 /** EventDB Service
  *

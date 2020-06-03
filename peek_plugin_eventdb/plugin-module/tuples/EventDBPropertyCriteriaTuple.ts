@@ -15,7 +15,7 @@ export class EventDBPropertyCriteriaTuple extends Tuple {
 
 
     property: EventDBPropertyTuple;
-    value: EventDBPropertyValueTuple | string;
+    value: string[] | string;
 
     constructor() {
         super(EventDBPropertyCriteriaTuple.tupleName)

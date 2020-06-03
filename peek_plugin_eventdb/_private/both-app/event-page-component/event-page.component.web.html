@@ -1,7 +1,9 @@
-<div class="container">
+<div>
     <h1 class="text-center">Alarms and Events</h1>
 
-    <plugin-eventdb-event-list></plugin-eventdb-event-list>
+    <plugin-eventdb-event-filter (filterChange)="eventList.updateFilter($event)"></plugin-eventdb-event-filter>
 
+    <plugin-eventdb-event-column (columnChange)="eventList.updateColumn($event)"></plugin-eventdb-event-column>
+
+    <plugin-eventdb-event-list #eventList></plugin-eventdb-event-list>
 </div>
-

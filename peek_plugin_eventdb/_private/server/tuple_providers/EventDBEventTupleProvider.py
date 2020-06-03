@@ -1,10 +1,13 @@
 import logging
+from datetime import datetime
 
 from peek_plugin_base.storage.DbConnection import DbSessionCreator
 from peek_plugin_base.storage.RunPyInPg import runPyInPg
 from peek_plugin_eventdb.tuples.EventDBEventTuple import EventDBEventTuple
 from twisted.internet.defer import Deferred, inlineCallbacks
 from vortex.Payload import Payload
+from vortex.SerialiseUtil import ISO8601
+from vortex.Tuple import addTupleType, Tuple, TupleField
 from vortex.TupleSelector import TupleSelector
 from vortex.handler.TupleDataObservableHandler import TuplesProviderABC
 
@@ -61,7 +64,33 @@ class EventDBEventTupleProvider(TuplesProviderABC):
             sql += """ AND timestamp with time zone '%s' <= "dateTime" """ \
                    % oldestDateTime
 
+        for cri in criteria:
+            if isinstance(cri.value, str):
+                sql += """ AND "value"->>'%s' like '%s' """ \
+                       % (criteria.property.key, '%' + criteria.value + '%')
+
+            elif isinstance(cri.value, list):
+                criSql = []
+                for value in cri.value:
+                    try:
+                        quotedVal = int(value)
+                    except ValueError:
+                        quotedVal = "'%s'" % value
+
+                    criSql.append(""" "value" @> '{"%s":%s}'::jsonb """
+                                  % (criteria.property.key, quotedVal))
+
+                sql += """ AND (%s) """ % ' OR '.join(criSql)
+
+            else:
+                raise Exception("Unknown criteria type")
+
         # TODO, We probably need some pagination.
+
+        def convertDate(strIn: str) -> datetime:
+            if len(strIn.split('+')[1]) == 2:
+                strIn += '00'
+            return datetime.strptime(strIn, ISO8601)
 
         tuples = []
 
@@ -71,7 +100,7 @@ class EventDBEventTupleProvider(TuplesProviderABC):
             if not rows:
                 break
             for row in rows:
-                tuples.append(EventDBEventTuple(dateTime=row["dateTime"],
+                tuples.append(EventDBEventTuple(dateTime=convertDate(row["dateTime"]),
                                                 key=row["key"],
                                                 value=row["value"]))
 

@@ -4,13 +4,8 @@ import {BehaviorSubject, Observable} from "rxjs";
 import {EventDBPropertyTuple} from "../tuples/EventDBPropertyTuple";
 import {EventDBPropertyCriteriaTuple} from "../tuples/EventDBPropertyCriteriaTuple";
 import {EventDBEventTuple} from "../tuples/EventDBEventTuple";
-import {EventDBService} from "../EventDBService";
+import {EventDateTimeRangeI, EventDBService} from "../EventDBService";
 import {EventDBTupleService} from "./EventDBTupleService";
-
-export interface EventDateTimeRangeI {
-    oldestDateTime?: Date | null;
-    newestDateTime?: Date | null;
-}
 
 
 @Injectable()
@@ -59,16 +54,16 @@ export class PrivateEventDBService extends ComponentLifecycleEventEmitter
                 for (let key of Object.keys(dict)) {
                     const subject = this._subjectByModelSetKey[key];
                     if (subject != null)
-                        subject.next(dict[key])
+                        subject.next(dict[key]);
                 }
-            })
+            });
     }
 
     propertyTuples(modelSetKey: string): Observable<EventDBPropertyTuple[]> | null {
         if (this._subjectByModelSetKey[modelSetKey] == null) {
             const props = this._propertiesByModelSetKey[modelSetKey];
             this._subjectByModelSetKey[modelSetKey]
-                = new BehaviorSubject<EventDBPropertyTuple[]>(props || [])
+                = new BehaviorSubject<EventDBPropertyTuple[]>(props || []);
         }
 
         const subject = this._subjectByModelSetKey[modelSetKey];

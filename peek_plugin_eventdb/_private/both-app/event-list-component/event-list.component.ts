@@ -1,10 +1,13 @@
 import {Component, OnInit} from "@angular/core";
 import {PrivateEventDBService} from "@peek/peek_plugin_eventdb/_private/PrivateEventDBService";
-import {EventDBEventTuple} from "@peek/peek_plugin_eventdb/tuples";
+import {EventDBEventTuple, EventDBPropertyTuple} from "@peek/peek_plugin_eventdb/tuples";
 import {DocDbPopupService, DocDbPopupTypeE} from "@peek/peek_plugin_docdb";
 import {eventdbPluginName} from "@peek/peek_plugin_eventdb/_private/PluginNames";
+import {ComponentLifecycleEventEmitter} from "@synerty/vortexjs";
 
 import * as moment from "moment";
+import {FilterI} from "../event-filter-component/event-filter.component";
+import {ColumnI} from "../event-column-component/event-column.component";
 
 // import {
 //     DocDbPopupActionI,
@@ -20,45 +23,74 @@ import * as moment from "moment";
 
 
 @Component({
-    selector: 'plugin-eventdb-event-list',
-    templateUrl: 'event-list.component.web.html',
-    styleUrls: ['event-list.component.web.scss'],
+    selector: "plugin-eventdb-event-list",
+    templateUrl: "event-list.component.web.html",
     moduleId: module.id
 })
-export class EventDBEventListComponent implements OnInit {
+export class EventDBEventListComponent extends ComponentLifecycleEventEmitter implements OnInit {
 
     private lastSubscription = null;
-    events = [];
-    props = [];
+    events: EventDBEventTuple[] = [];
+    props: EventDBPropertyTuple[] = [];
+    displayProps: EventDBPropertyTuple[] = [];
 
-    modelSetKey = 'pofDiagram'
+    modelSetKey = "pofDiagram";
 
     constructor(private objectPopupService: DocDbPopupService,
                 private eventService: PrivateEventDBService) {
-
+        super();
     }
 
     ngOnInit() {
-        this.update();
+        this.updateFilter({
+            modelSetKey: this.modelSetKey,
+            dateTimeRange: {
+                oldestDateTime: moment().subtract(2, "hours").toDate(),
+                newestDateTime: null,
+            },
+            criteria: [],
+        });
+
         this.eventService.propertyTuples(this.modelSetKey)
-            .subscribe(x => this.props = x);
+            .takeUntil(this.onDestroyEvent)
+            .subscribe((props: EventDBPropertyTuple[]) => {
+
+                // sort properties by order.
+                this.props = props.sort((a, b) => a.order - b.order);
+
+                // filter for default display properties.
+                this.updateColumn({
+                    selectedProps: props
+                        .filter(prop => prop.displayByDefaultOnDetailView)
+                        .sort((a, b) => a.order - b.order)
+                });
+            });
     }
 
-    private update() {
+    updateColumn(props: ColumnI) {
+        this.displayProps = props.selectedProps;
+    }
+
+    updateFilter(filter: FilterI) {
         if (this.lastSubscription != null)
             this.lastSubscription.unsubscribe();
 
-        const fromDate = moment().subtract(2, 'hours').toDate();
-
         this.lastSubscription = this.eventService
-            .eventTuples(this.modelSetKey,
-                {oldestDateTime: fromDate})
+            .eventTuples(filter.modelSetKey, filter.dateTimeRange, filter.criteria)
             .subscribe((events: EventDBEventTuple[]) => {
                 this.events = events;
                 for (let event of events) {
                     event.value = JSON.parse(event.value);
                 }
-            })
+            });
+    }
+
+    displayValue(event: EventDBEventTuple, prop: EventDBPropertyTuple): string {
+        const eventVal = event.value[prop.key];
+        if (prop.values != null)
+            return eventVal;
+​
+        return prop.values != null ? eventVal : prop.rawValToUserVal(eventVal);
     }
 
     tooltipEnter($event: MouseEvent, result: EventDBEventTuple) {
@@ -98,6 +130,5 @@ export class EventDBEventListComponent implements OnInit {
                 result.value.component_id.toLowerCase());
 
     }
-
 
 }

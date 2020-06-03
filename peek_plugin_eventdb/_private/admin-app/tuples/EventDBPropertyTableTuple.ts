@@ -29,7 +29,7 @@ export class EventDBPropertyTableTuple extends Tuple {
     uiExpandValues = false;
 
     constructor() {
-        super(EventDBPropertyTableTuple.tupleName)
+        super(EventDBPropertyTableTuple.tupleName);
     }
 
     get isValid(): boolean {

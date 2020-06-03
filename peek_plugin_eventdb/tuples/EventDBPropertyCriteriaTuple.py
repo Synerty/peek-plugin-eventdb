@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, List
 
 from vortex.Tuple import Tuple, addTupleType, TupleField
 
@@ -17,4 +17,4 @@ class EventDBPropertyCriteriaTuple(Tuple):
     __tupleType__ = eventdbTuplePrefix + 'EventDBPropertyCriteriaTuple'
 
     property: EventDBPropertyTuple = TupleField()
-    value: Union[EventDBPropertyValueTuple, str] = TupleField()
+    value: Union[List[str], str] = TupleField()

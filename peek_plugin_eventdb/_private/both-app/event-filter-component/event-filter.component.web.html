@@ -1,0 +1,70 @@
+<button nz-button nzType="default" (click)="showModal()">
+    Filter
+</button>
+
+<nz-modal
+    [(nzVisible)]="isVisible"
+    nzTitle="Events Filter"
+    (nzOnCancel)="handleCancel()"
+    (nzOnOk)="handleOk()"
+    [nzOkLoading]="isOkLoading">
+
+    <nz-table #filterTable nzSize="small" [nzData]="filterProps">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Filter</th>
+            <th>
+                <button nz-button nzType="default"
+                        (click)="clearFilter()">
+                    Clear Filter
+                </button>
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let item of filterTable.data">
+            <td>{{item.name}}</td>
+
+            <ng-container [ngSwitch]="item.showFilterAs">
+
+                <td colspan="2" *ngSwitchCase="FilterAsEnum.SHOW_FILTER_AS_FREE_TEXT">
+                    <input nz-input
+                           placeholder="filter"
+                           [(ngModel)]="criteria(item).value">
+                </td>
+
+                <td colspan="2" *ngSwitchCase="FilterAsEnum.SHOW_FILTER_AS_CHECK_BOXES">
+                    <nz-select nzMode="tags" nzPlaceHolder="Select many"
+                               [(ngModel)]="criteria(item).value">
+                        <nz-option *ngFor="let option of item.values"
+                                   [nzLabel]="option.name"
+                                   [nzValue]="option.value">
+                        </nz-option>
+                    </nz-select>
+                </td>
+
+                <td colspan="2" *ngSwitchCase="FilterAsEnum.SHOW_FILTER_AS_DROP_DOWN">
+                    <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Select one"
+                               [(ngModel)]="criteria(item).value">
+                        <nz-option *ngFor="let option of item.values"
+                                   [nzLabel]="option.name"
+                                   [nzValue]="option.value">
+                        </nz-option>
+                    </nz-select>
+                </td>
+
+                <div *ngSwitchDefault>
+                    <td>
+                        <span nz-text>
+                            No Filter
+                        </span>
+                    </td>
+                </div>
+            </ng-container>
+
+        </tr>
+        </tbody>
+    </nz-table>
+
+</nz-modal>
