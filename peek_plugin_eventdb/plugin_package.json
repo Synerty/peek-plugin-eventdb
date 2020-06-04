@@ -49,12 +49,12 @@
     "agent": {
     },
     "mobile": {
-        "titleBarText": "Alarms / Events",
+        "homeLinkText": "Alarms / Events",
         "showHomeLink": true,
         "appDir": "_private/both-app",
         "appModule": "eventdb.module#EventDBModule",
         "assetDir": "_private/both-assets",
-        "icon": "/assets/peek_plugin_object_popup/icon.png",
+        "icon": "/assets/peek_plugin_eventdb/icon.png",
         "moduleDir": "plugin-module",
         "rootServices": [
             {
@@ -74,12 +74,12 @@
         ]
     },
     "desktop": {
-        "titleBarText": "Alarms / Events",
+        "homeLinkText": "Alarms / Events",
         "showHomeLink": true,
         "appDir": "_private/both-app",
         "appModule": "eventdb.module#EventDBModule",
         "assetDir": "_private/both-assets",
-        "icon": "/assets/peek_plugin_object_popup/icon.png",
+        "icon": "/assets/peek_plugin_eventdb/icon.png",
         "moduleDir": "plugin-module",
         "rootServices": [
             {
