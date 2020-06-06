@@ -15,8 +15,8 @@ class EventDBPropertyTable(Tuple, DeclarativeBase):
     __tupleType__ = eventdbTuplePrefix + 'EventDBPropertyTable'
 
     SHOW_FILTER_AS_FREE_TEXT = 1
-    SHOW_FILTER_AS_CHECK_BOXES = 2
-    SHOW_FILTER_AS_DROP_DOWN = 3
+    SHOW_FILTER_SELECT_MANY = 2
+    SHOW_FILTER_SELECT_ONE = 3
 
     id = Column(Integer, primary_key=True, autoincrement=True)
 
@@ -31,11 +31,11 @@ class EventDBPropertyTable(Tuple, DeclarativeBase):
 
     useForFilter = Column(Boolean)
     useForDisplay = Column(Boolean)
+    useForPopup = Column(Boolean)
+    showFilterAs = Column(Integer)
 
     displayByDefaultOnSummaryView = Column(Boolean)
     displayByDefaultOnDetailView = Column(Boolean)
-
-    showFilterAs = Column(Integer)
 
     valuesFromAdminUi = TupleField()
 
@@ -53,6 +53,7 @@ class EventDBPropertyTable(Tuple, DeclarativeBase):
             comment=self.comment,
             useForFilter=self.useForFilter,
             useForDisplay=self.useForDisplay,
+            useForPopup=self.useForPopup,
             displayByDefaultOnSummaryView=self.displayByDefaultOnSummaryView,
             displayByDefaultOnDetailView=self.displayByDefaultOnDetailView,
             showFilterAs=self.showFilterAs,

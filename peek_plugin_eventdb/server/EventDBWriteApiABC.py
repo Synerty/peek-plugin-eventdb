@@ -6,13 +6,13 @@ from twisted.internet.defer import Deferred
 
 class EventDBWriteApiABC(metaclass=ABCMeta):
     @abstractmethod
-    def addEvents(self, modelSetName: str,
+    def addEvents(self, modelSetKey: str,
                   eventsEncodedPayload: str) -> Deferred:
         """ Add Events
 
-        Tells the EventDB that values have updated in the field, or wherever.
+        Add events to the EventDB
 
-        :param modelSetName:  The name of the model set for the EventDB
+        :param modelSetKey:  The name of the model set for the EventDB
         :param eventsEncodedPayload: An encoded Payload containing a
          list of events to insert.
 
@@ -22,15 +22,32 @@ class EventDBWriteApiABC(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def removeEvents(self, modelSetName: str, eventKeys: List[str]) -> Deferred:
-        """ Add Item Events
+    def removeEvents(self, modelSetKey: str, eventKeys: List[str]) -> Deferred:
+        """ Remove Events
 
-        Tells the EventDB that values have updated in the field, or wherever.
+        Remove events from the EventDB
 
-        :param modelSetName:  The name of the model set for the EventDB
+        :param modelSetKey:  The name of the model set for the EventDB
         :param eventKeys: An list of event keys to remove.
 
         :return: A deferred that fires when the removal is complete.
+        :rtype: None
+
+        """
+
+    @abstractmethod
+    def replaceProperties(self, modelSetKey: str,
+                          propertiesEncodedPayload: str) -> Deferred:
+        """ Replace Properties
+
+        Create or Replace the properties for a model set of events.
+
+        :param modelSetKey:  The name of the model set for the EventDB
+        :param propertiesEncodedPayload: An encoded Payload containing a
+                payload.tuples=List[EventDBPropertyTuple]
+         list of events to insert.
+
+        :return: A deferred that fires when the create / update is complete.
         :rtype: None
 
         """

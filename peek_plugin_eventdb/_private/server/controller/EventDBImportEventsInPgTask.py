@@ -12,7 +12,7 @@ from vortex.Tuple import TUPLE_TYPES_BY_NAME
 logger = logging.getLogger(__name__)
 
 
-class EventDBImportInPgTask:
+class EventDBImportEventsInPgTask:
     """ EventDB Import In PostGreSQL Tasks
 
     The methods in this class are run in the databases plpython extension.
@@ -37,7 +37,7 @@ class EventDBImportInPgTask:
         minDate = min(dates)
 
         # Get the model set id
-        modelSetId = cls._getModelSetId(plpy, modelSetKey, createIfMissing=True)
+        modelSetId = cls.getModelSetId(plpy, modelSetKey, createIfMissing=True)
 
         # Now insert the events
         cls._loadEvents(plpy, events, modelSetId)
@@ -50,7 +50,7 @@ class EventDBImportInPgTask:
                      eventKeys: List[str]) -> int:
 
         # Get the model set id
-        modelSetId = cls._getModelSetId(plpy, modelSetKey, createIfMissing=False)
+        modelSetId = cls.getModelSetId(plpy, modelSetKey, createIfMissing=False)
         if modelSetId is None:
             plpy.debug("ModelSet with key %s doesn't exist" % modelSetKey)
             return 0
@@ -61,7 +61,7 @@ class EventDBImportInPgTask:
         return len(eventKeys)
 
     @classmethod
-    def _getModelSetId(cls, plpy, modelSetKey, createIfMissing) -> Optional[int]:
+    def getModelSetId(cls, plpy, modelSetKey, createIfMissing) -> Optional[int]:
         msTbl = EventDBModelSetTable.__table__
         qryModelSetSql = str(msTbl
                              .select()

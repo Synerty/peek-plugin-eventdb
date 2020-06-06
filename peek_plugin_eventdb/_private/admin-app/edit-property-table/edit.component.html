@@ -20,6 +20,7 @@
 
                 <th>Filter Property</th>
                 <th>Display Property</th>
+                <th>Popup Details</th>
                 <th>
                     <button nz-button nzType="default" nzShape="circle"
                             (click)="addClicked()">
@@ -70,6 +71,9 @@
                         <nz-switch [(ngModel)]="item.useForDisplay"></nz-switch>
                     </td>
                     <td>
+                        <nz-switch [(ngModel)]="item.useForPopup"></nz-switch>
+                    </td>
+                    <td>
                         <button nz-button nzType="default" nzShape="circle"
                                 (click)="removeClicked(itemIndex)">
                             <i nz-icon nzType="close"></i>
@@ -106,6 +110,7 @@
             <tr>
                 <th>Value</th>
                 <th>Name</th>
+                <th>Color</th>
                 <th>Comment</th>
                 <th>
                     <button nz-button nzType="default" nzShape="circle"
@@ -128,6 +133,11 @@
                         <input nz-input
                                placeholder="Name"
                                [(ngModel)]="value.name"/>
+                    </td>
+                    <td>
+                        <input nz-input
+                               placeholder="Color"
+                               [(ngModel)]="value.color"/>
                     </td>
                     <td>
                         <input nz-input

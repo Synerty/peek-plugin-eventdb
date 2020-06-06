@@ -1,24 +1,30 @@
-<nz-table #eventsTable [nzData]="events">
+<nz-table #eventsTable [nzData]="events"
+          nzSize="small"
+          nzPageSize="20"
+          nzPaginationPosition="top"
+          nzShowSizeChanger="true"
+          [nzLoading]="isDataLoading">
     <thead>
     <tr>
-        <th>Date</th>
-        <ng-container *ngFor="let prop of displayProps">
-            <th>{{ prop.name }}</th>
-        </ng-container>
+        <th>Date&nbsp;&nbsp;&nbsp;&nbsp;(Loaded {{events.length}})</th>
+        <th *ngFor="let prop of displayProps"
+            nzShowSort
+            [nzSortKey]="'value.' + prop.key">{{ prop.name }}
+        </th>
     </tr>
     </thead>
     <tbody>
     <tr *ngFor="let event of eventsTable.data"
         (mouseenter)="tooltipEnter($event, event)"
         (mouseleave)="tooltipExit($event, event)"
-        (click)="showSummaryPopup($event, event)">
+        (click)="showSummaryPopup($event, event)"
+        [ngStyle]="{'background-color': colorValue(event)}">
         <td>
-            <p>{{ event.dateTime | date:'h:mm:ss a' }}</p>
-            <p>{{ event.dateTime | date:'dd-MMM-yyyy' }}</p>
+            {{ event.dateTime | date:'hh:mm:ss.SSS dd-MMM-yyyy' }}
         </td>
-        <ng-container *ngFor="let prop of displayProps">
-            <td>{{displayValue(event, prop)}}</td>
-        </ng-container>
+        <td *ngFor="let prop of displayProps">
+            {{displayValue(event, prop)}}
+        </td>
     </tr>
     </tbody>
 </nz-table>

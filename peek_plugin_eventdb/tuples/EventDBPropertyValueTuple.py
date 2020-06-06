@@ -22,6 +22,10 @@ class EventDBPropertyValueTuple(Tuple):
     value: The value that matches
        EvenDBEventTuple.value[property.key] == propertyValue.value
 
+    color: If this property has a color then define it here.
+           the first property value with a color will be applied
+           ordered by property.order
+
     comment: The tooltip to display to the user in a UI.
 
     """
@@ -29,4 +33,5 @@ class EventDBPropertyValueTuple(Tuple):
 
     name: str = TupleField()
     value: str = TupleField()
+    color: str = TupleField()
     comment: Optional[str] = TupleField()

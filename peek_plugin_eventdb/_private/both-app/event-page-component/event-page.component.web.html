@@ -1,9 +1,26 @@
 <div>
-    <h1 class="text-center">Alarms and Events</h1>
+    <br/>
+    <plugin-eventdb-event-filter
+        #eventFilter
+        (filterChange)="eventList.updateFilter($event)"></plugin-eventdb-event-filter>
 
-    <plugin-eventdb-event-filter (filterChange)="eventList.updateFilter($event)"></plugin-eventdb-event-filter>
+    <plugin-eventdb-event-column
+        (columnChange)="eventList.updateColumn($event)"></plugin-eventdb-event-column>
 
-    <plugin-eventdb-event-column (columnChange)="eventList.updateColumn($event)"></plugin-eventdb-event-column>
+    <nz-switch [ngModel]="false"
+               (ngModelChange)="eventList.updateColors($event)"
+               nzCheckedChildren="Colors"
+               nzUnCheckedChildren="Colors"></nz-switch>
+    <span>&nbsp;&nbsp;</span>
+
+    <nz-switch [ngModel]="true"
+               (ngModelChange)="eventFilter.updateLive($event)"
+               nzCheckedChildren="Live"
+               nzUnCheckedChildren="Live"></nz-switch>
+    <span>&nbsp;&nbsp;</span>
+    A maximum of 5000 Alarms and Events will be loaded.
 
     <plugin-eventdb-event-list #eventList></plugin-eventdb-event-list>
+
+    <br/>
 </div>

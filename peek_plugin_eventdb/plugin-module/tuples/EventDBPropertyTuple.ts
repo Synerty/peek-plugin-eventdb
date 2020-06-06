@@ -4,8 +4,8 @@ import {EventDBPropertyValueTuple} from "./EventDBPropertyValueTuple";
 
 export enum EventDBPropertyShowFilterAsEnum {
     SHOW_FILTER_AS_FREE_TEXT = 1,
-    SHOW_FILTER_AS_CHECK_BOXES = 2,
-    SHOW_FILTER_AS_DROP_DOWN = 3,
+    SHOW_FILTER_SELECT_MANY = 2,
+    SHOW_FILTER_SELECT_ONE = 3,
 }
 
 /** Event DB Property Tuple
@@ -40,6 +40,9 @@ export class EventDBPropertyTuple extends Tuple {
     // useForDisplay: Can the user choose to see this
     useForDisplay: boolean | null;
 
+    // useForPopup: Should this ID be used for popping up the DocDB
+    useForPopup: boolean | null;
+
     // FOR DISPLAY
     // displayByDefaultOnSummaryView: Is this field visible by default when showing a
     //      summary alarm / event list.
@@ -57,15 +60,14 @@ export class EventDBPropertyTuple extends Tuple {
     // FOR FILTER and FOR DISPLAY
     // values: the list of values for
     values: EventDBPropertyValueTuple[] | null;
+
     // Create a map of the values to speed up conversion for the UI.
     private nameByValue: { [value: string]: string };
-​
+    private colorByValue: { [value: string]: string };
 
     constructor() {
         super(EventDBPropertyTuple.tupleName);
     }
-
-​
 
     /** Raw Value To User Value
      *
@@ -77,11 +79,36 @@ export class EventDBPropertyTuple extends Tuple {
         if (this.nameByValue == null) {
             this.nameByValue = {};
             for (let valueTuple of this.values) {
-                this.nameByValue[valueTuple.value] = valueTuple.name;
+                if (valueTuple.value.toLowerCase() === 'true')
+                    this.nameByValue['true'] = valueTuple.name;
+
+                else if (valueTuple.value.toLowerCase() === 'false')
+                    this.nameByValue['false'] = valueTuple.name;
+
+                else
+                    this.nameByValue[valueTuple.value] = valueTuple.name;
             }
         }
 ​
         // Return the name for the value
         return this.nameByValue[value];
+    }
+​
+    /** Raw Value To Color
+     *
+     * @param value: The raw value in the data
+     * @return: A potential color for this row.
+     */
+    rawValToColor(value: string): string {
+        // Lazy create the map
+        if (this.colorByValue == null) {
+            this.colorByValue = {};
+            for (let valueTuple of this.values) {
+                this.colorByValue[valueTuple.value] = valueTuple.color;
+            }
+        }
+​
+        // Return the name for the value
+        return this.colorByValue[value];
     }
 }

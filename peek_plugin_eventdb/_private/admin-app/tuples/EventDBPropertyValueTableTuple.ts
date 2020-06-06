@@ -9,6 +9,7 @@ export class EventDBPropertyValueTableTuple extends Tuple {
     id: number;
     name: string;
     value: string;
+    color: string;
     comment: string | null;
 
     propertyId: number;

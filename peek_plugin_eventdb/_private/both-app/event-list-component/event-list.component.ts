@@ -9,31 +9,25 @@ import * as moment from "moment";
 import {FilterI} from "../event-filter-component/event-filter.component";
 import {ColumnI} from "../event-column-component/event-column.component";
 
-// import {
-//     DocDbPopupActionI,
-//     DocDbPopupTypeE
-// } from "@peek/peek_plugin_docdb/DocDbPopupService";
-// import * as $ from "jquery";
-// import {
-//     PopupTriggeredParams,
-//     PrivateDocDbPopupService
-// } from "@peek/peek_plugin_docdb/_private/services/PrivateDocDbPopupService";
-// import {NzContextMenuService} from "ng-zorro-antd";
-// import {DocDbPopupClosedReasonE, DocDbPopupDetailI} from "@peek/peek_plugin_docdb";
-
 
 @Component({
     selector: "plugin-eventdb-event-list",
     templateUrl: "event-list.component.web.html",
+    styleUrls: ["../event-common.component.web.scss"],
     moduleId: module.id
 })
 export class EventDBEventListComponent extends ComponentLifecycleEventEmitter implements OnInit {
 
     private lastSubscription = null;
+    private lastFilter: FilterI;
+
+    private lastFrozen: boolean = false;
+    private colorsEnabled: boolean = false;
+
     events: EventDBEventTuple[] = [];
     props: EventDBPropertyTuple[] = [];
     displayProps: EventDBPropertyTuple[] = [];
-
+    isDataLoading = true;
     modelSetKey = "pofDiagram";
 
     constructor(private objectPopupService: DocDbPopupService,
@@ -62,9 +56,12 @@ export class EventDBEventListComponent extends ComponentLifecycleEventEmitter im
                 this.updateColumn({
                     selectedProps: props
                         .filter(prop => prop.displayByDefaultOnDetailView)
-                        .sort((a, b) => a.order - b.order)
                 });
             });
+    }
+
+    updateColors(colorsOn: boolean): void {
+        this.colorsEnabled = colorsOn;
     }
 
     updateColumn(props: ColumnI) {
@@ -72,42 +69,82 @@ export class EventDBEventListComponent extends ComponentLifecycleEventEmitter im
     }
 
     updateFilter(filter: FilterI) {
-        if (this.lastSubscription != null)
-            this.lastSubscription.unsubscribe();
+        this.events = [];
+        this.isDataLoading = true
+        this.lastFilter = filter;
+
+        this.unsubUpdates();
 
         this.lastSubscription = this.eventService
             .eventTuples(filter.modelSetKey, filter.dateTimeRange, filter.criteria)
             .subscribe((events: EventDBEventTuple[]) => {
                 this.events = events;
-                for (let event of events) {
-                    event.value = JSON.parse(event.value);
-                }
+                this.isDataLoading = false;
             });
+
+        if (this.lastFrozen)
+            this.unsubUpdates();
+
+    }
+
+    private unsubUpdates() {
+        if (this.lastSubscription != null)
+            this.lastSubscription.unsubscribe();
+
+        this.lastSubscription = null;
     }
 
     displayValue(event: EventDBEventTuple, prop: EventDBPropertyTuple): string {
         const eventVal = event.value[prop.key];
-        if (prop.values != null)
-            return eventVal;
-​
-        return prop.values != null ? eventVal : prop.rawValToUserVal(eventVal);
+        return prop.values != null && prop.values.length != 0
+            ? prop.rawValToUserVal(eventVal)
+            : eventVal;
+    }
+
+    colorValue(event: EventDBEventTuple): string {
+        if (!this.colorsEnabled)
+            return null;
+
+        // Stash this value here to improve performance
+        if (event["color"] != null)
+            return event["color"];
+
+        let color = "";
+        for (let prop of this.props) {
+            const eventVal = event.value[prop.key];
+            const thisColor = prop.rawValToColor(eventVal);
+            if (thisColor != null) {
+                color = thisColor;
+                break;
+            }
+        }
+
+        event["color"] = color;
+        return color
+    }
+
+    private getDocDBPopupKey(event: EventDBEventTuple): string | null {
+        for (let prop of this.props) {
+            if (prop.useForPopup && event.value[prop.key] != null) {
+                return event.value[prop.key].toLowerCase();
+            }
+        }
+        return null;
     }
 
     tooltipEnter($event: MouseEvent, result: EventDBEventTuple) {
-        if (result.value.component_id == null)
+        const docdbPopupKey = this.getDocDBPopupKey(result);
+        if (docdbPopupKey == null)
             return;
 
-        const offset = $(".scroll-container").offset();
+        // const offset = $(".scroll-container").offset();
         this.objectPopupService
             .showPopup(
                 DocDbPopupTypeE.tooltipPopup,
                 eventdbPluginName,
-                {
-                    x: $event.x + 50,
-                    y: $event.y
-                },
+                $event,
                 this.modelSetKey,
-                result.value.component_id.toLowerCase());
+                docdbPopupKey);
 
     }
 
@@ -117,8 +154,8 @@ export class EventDBEventListComponent extends ComponentLifecycleEventEmitter im
     }
 
     showSummaryPopup($event: MouseEvent, result: EventDBEventTuple) {
-        this.objectPopupService.hidePopup(DocDbPopupTypeE.tooltipPopup);
-        if (result.value.component_id == null)
+        const docdbPopupKey = this.getDocDBPopupKey(result);
+        if (docdbPopupKey == null)
             return;
 
         this.objectPopupService
@@ -127,7 +164,7 @@ export class EventDBEventListComponent extends ComponentLifecycleEventEmitter im
                 eventdbPluginName,
                 $event,
                 this.modelSetKey,
-                result.value.component_id.toLowerCase());
+                docdbPopupKey);
 
     }
 

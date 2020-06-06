@@ -42,8 +42,7 @@ export class EventDBColumnComponent extends ComponentLifecycleEventEmitter imple
                     .sort((a, b) => a.order - b.order);
 
                 this.selectingProps = this.props
-                    .filter(prop => prop.displayByDefaultOnDetailView)
-                    .sort((a, b) => a.order - b.order);
+                    .filter(prop => prop.displayByDefaultOnDetailView);
             });
 
     }
@@ -52,7 +51,7 @@ export class EventDBColumnComponent extends ComponentLifecycleEventEmitter imple
         this.isVisible = true;
     }
 
-    handleOk(): void {
+    onOkClicked(): void {
         this.isOkLoading = true;
 
         this.columnChange.emit({
@@ -69,11 +68,10 @@ export class EventDBColumnComponent extends ComponentLifecycleEventEmitter imple
         this.isOkLoading = true;
 
         this.selectingProps = this.props
-            .filter(prop => prop.displayByDefaultOnDetailView)
-            .sort((a, b) => a.order - b.order);
+            .filter(prop => prop.displayByDefaultOnDetailView);
     }
 
-    handleCancel(): void {
+    onCancelClicked(): void {
         this.selectingProps = [];
         this.isVisible = false;
     }

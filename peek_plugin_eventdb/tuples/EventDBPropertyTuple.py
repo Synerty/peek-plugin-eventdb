@@ -35,6 +35,9 @@ class EventDBPropertyTuple(Tuple):
     // useForDisplay: Can the user choose to see this
     useForDisplay: boolean | null;
 
+    // useForPopup: Should this ID be used for popping up the DocDB
+    useForPopup: boolean | null;
+
     // FOR DISPLAY
     // displayByDefaultOnSummaryView: Is this field visible by default when showing a
     //      summary alarm / event list.
@@ -56,8 +59,8 @@ class EventDBPropertyTuple(Tuple):
     __tupleType__ = eventdbTuplePrefix + 'EventDBPropertyTuple'
 
     SHOW_FILTER_AS_FREE_TEXT = 1
-    SHOW_FILTER_AS_CHECK_BOXES = 2
-    SHOW_FILTER_AS_DROP_DOWN = 3
+    SHOW_FILTER_SELECT_MANY = 2
+    SHOW_FILTER_SELECT_ONE = 3
 
     modelSetKey: str = TupleField()
     key: str = TupleField()
@@ -67,6 +70,7 @@ class EventDBPropertyTuple(Tuple):
 
     useForFilter: Optional[bool] = TupleField()
     useForDisplay: Optional[bool] = TupleField()
+    useForPopup: Optional[bool] = TupleField()
 
     displayByDefaultOnSummaryView: Optional[bool] = TupleField()
     displayByDefaultOnDetailView: Optional[bool] = TupleField()

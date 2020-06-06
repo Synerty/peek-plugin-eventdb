@@ -17,6 +17,7 @@ class EventDBPropertyValueTable(Tuple, DeclarativeBase):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, nullable=False)
     value = Column(String, nullable=False)
+    color = Column(String)
     comment = Column(String)
 
     propertyId = Column(Integer, ForeignKey('EventDBProperty.id', ondelete='CASCADE'),
@@ -32,5 +33,6 @@ class EventDBPropertyValueTable(Tuple, DeclarativeBase):
         return EventDBPropertyValueTuple(
             name=self.name,
             value=self.value,
+            color=self.color,
             comment=self.comment
         )

@@ -6,6 +6,7 @@ import {EventDBPropertyCriteriaTuple} from "../tuples/EventDBPropertyCriteriaTup
 import {EventDBEventTuple} from "../tuples/EventDBEventTuple";
 import {EventDateTimeRangeI, EventDBService} from "../EventDBService";
 import {EventDBTupleService} from "./EventDBTupleService";
+import {map} from "rxjs/operators";
 
 
 @Injectable()
@@ -85,10 +86,26 @@ export class PrivateEventDBService extends ComponentLifecycleEventEmitter
             criteria: criteria
         });
 
-        return <Observable<EventDBEventTuple[]>>
-            this.tupleService.offlineObserver
+        const observable: Observable<EventDBEventTuple[]> =
+            <Observable<EventDBEventTuple[]>>this.tupleService
+                .offlineObserver
                 .subscribeToTupleSelector(ts)
                 .takeUntil(this.onDestroyEvent);
+
+        return observable
+            .pipe(map((events: EventDBEventTuple[]) => {
+                // Convert the json string to actual json objects
+                // Don't do it if it's already done as
+                // VortexJS caches the data in memory for a short period.
+                if (events != null && events.length != 0) {
+                    if (typeof events[0].value === "string") {
+                        for (let event of events) {
+                            event.value = JSON.parse(event.value);
+                        }
+                    }
+                }
+                return events;
+            }));
 
     }
 }

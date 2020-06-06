@@ -1,7 +1,6 @@
 import {addTupleType, Tuple} from "@synerty/vortexjs";
 import {eventdbTuplePrefix} from "../_private/PluginNames";
 import {EventDBPropertyTuple} from "./EventDBPropertyTuple";
-import {EventDBPropertyValueTuple} from "./EventDBPropertyValueTuple";
 
 
 /** Event DB Property Criteria Tuple

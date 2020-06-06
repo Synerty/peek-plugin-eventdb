@@ -1,9 +1,9 @@
-import {Component, OnInit, EventEmitter, Output} from "@angular/core";
+import {Component, EventEmitter, OnInit, Output} from "@angular/core";
 import {PrivateEventDBService} from "@peek/peek_plugin_eventdb/_private/PrivateEventDBService";
 import {
-    EventDBPropertyTuple,
     EventDBPropertyCriteriaTuple,
-    EventDBPropertyShowFilterAsEnum
+    EventDBPropertyShowFilterAsEnum,
+    EventDBPropertyTuple
 } from "@peek/peek_plugin_eventdb/tuples";
 import {ComponentLifecycleEventEmitter} from "@synerty/vortexjs";
 import {Ng2BalloonMsgService} from "@synerty/ng2-balloon-msg";
@@ -20,7 +20,8 @@ export interface FilterI {
 @Component({
     selector: "plugin-eventdb-event-filter",
     templateUrl: "event-filter.component.web.html",
-    styleUrls: ["../event-common.component.web.scss"],
+    styleUrls: ["event-filter.component.web.scss",
+        "../event-common.component.web.scss"],
     moduleId: module.id
 })
 export class EventDBFilterComponent extends ComponentLifecycleEventEmitter implements OnInit {
@@ -33,8 +34,15 @@ export class EventDBFilterComponent extends ComponentLifecycleEventEmitter imple
 
     private propCriteria: { [key: string]: EventDBPropertyCriteriaTuple } = {};
 
+    dateTimeRange: EventDateTimeRangeI;
+
+    private criterias: EventDBPropertyCriteriaTuple[] = [];
+
     // TODO: have this coded in a single source with @Input()
     modelSetKey = "pofDiagram";
+
+    private liveUpdateTimer: any;
+    private liveEnabled: boolean = true;
 
     @Output("filterChange")
     filterChange = new EventEmitter<FilterI>();
@@ -45,9 +53,15 @@ export class EventDBFilterComponent extends ComponentLifecycleEventEmitter imple
                 private eventService: PrivateEventDBService) {
 
         super();
+
     }
 
     ngOnInit() {
+        this.dateTimeRange = {
+            oldestDateTime: moment().subtract(2, "hours").toDate(),
+            newestDateTime: null,
+        };
+
         this.eventService.propertyTuples(this.modelSetKey)
             .takeUntil(this.onDestroyEvent)
             .subscribe((props: EventDBPropertyTuple[]) => {
@@ -59,10 +73,49 @@ export class EventDBFilterComponent extends ComponentLifecycleEventEmitter imple
                     .sort((a, b) => a.order - b.order);
             });
 
+
+        // Setup a timer to update the last hour of data.
+        // If someone leaves the alarm list over night, the earliest date won't update.
+        this.liveUpdateTimer = setInterval(() => this.liveEnabledUpdateTimerCall(),
+            10 * 60 * 1000);
+
+        this.onDestroyEvent
+            .first()
+            .subscribe(() => clearInterval(this.liveUpdateTimer));
+
     }
 
-    clearFilter() {
-        this.propCriteria = {};
+    private defaultOldestDateTime(): Date {
+        // Round the datetime to the nearest 5 minutes.
+        // This will help to reduce the calls for people just watching the events.
+        let newDate = moment().subtract(2, "hours").seconds(0);
+        let minute = newDate.minute();
+        newDate.minute(minute - minute % 5);
+        return newDate.toDate();
+    }
+
+    private liveEnabledUpdateTimerCall(): void {
+        if (!this.liveEnabled)
+            return;
+
+        this.dateTimeRange = {
+            oldestDateTime: this.defaultOldestDateTime(),
+            newestDateTime: null
+        };
+
+        this.updateFilter();
+    }
+
+    updateLive(liveEnabled: boolean): void {
+        this.liveEnabled = liveEnabled;
+
+        if (this.liveEnabled)
+            this.liveEnabledUpdateTimerCall()
+
+        else if (this.dateTimeRange.newestDateTime == null)
+            this.dateTimeRange.newestDateTime = moment().toDate();
+
+        this.updateFilter();
     }
 
     criteria(prop: EventDBPropertyTuple): EventDBPropertyCriteriaTuple {
@@ -77,25 +130,26 @@ export class EventDBFilterComponent extends ComponentLifecycleEventEmitter imple
         this.isVisible = true;
     }
 
-    handleOk(): void {
+    onOkClicked(): void {
         this.isOkLoading = true;
 
-        const criterias: EventDBPropertyCriteriaTuple[] = [];
+        if (!this.liveEnabled) {
+            if (this.dateTimeRange.oldestDateTime == null)
+                this.dateTimeRange.oldestDateTime = this.defaultOldestDateTime();
+
+            if (this.dateTimeRange.newestDateTime == null)
+                this.dateTimeRange.newestDateTime = moment().toDate();
+        }
+
+        this.criterias = [];
         for (let key of Object.keys(this.propCriteria)) {
             const criteria = this.propCriteria[key];
             // TODO: don't add if value is blank.
             if (criteria.value != null && criteria.value.length != 0)
-                criterias.push(criteria);
+                this.criterias.push(criteria);
         }
 
-        this.filterChange.emit({
-            modelSetKey: this.modelSetKey,
-            dateTimeRange: {
-                oldestDateTime: moment().subtract(2, "hours").toDate(),
-                newestDateTime: null,
-            },
-            criteria: criterias,
-        });
+        this.updateFilter();
 
         setTimeout(() => {
             this.isVisible = false;
@@ -103,7 +157,19 @@ export class EventDBFilterComponent extends ComponentLifecycleEventEmitter imple
         }, 500);
     }
 
-    handleCancel(): void {
+    private updateFilter() {
+        this.filterChange.emit({
+            modelSetKey: this.modelSetKey,
+            dateTimeRange: this.dateTimeRange,
+            criteria: this.criterias,
+        });
+    }
+
+    resetDefaults(): void {
+        this.propCriteria = {};
+    }
+
+    onCancelClicked(): void {
         this.isVisible = false;
     }
 }

@@ -1,14 +1,13 @@
 import logging
 from typing import List
 
-from twisted.internet.defer import Deferred, inlineCallbacks
-
 from peek_plugin_eventdb._private.server.EventDBReadApi import EventDBReadApi
 from peek_plugin_eventdb._private.server.controller.EventDBController import \
     EventDBController
 from peek_plugin_eventdb._private.server.controller.EventDBImportController import \
     EventDBImportController
 from peek_plugin_eventdb.server.EventDBWriteApiABC import EventDBWriteApiABC
+from twisted.internet.defer import Deferred, inlineCallbacks
 
 logger = logging.getLogger(__name__)
 
@@ -38,16 +37,25 @@ class EventDBWriteApi(EventDBWriteApiABC):
         pass
 
     @inlineCallbacks
-    def addEvents(self, modelSetName: str, eventsEncodedPayload: str) -> Deferred:
+    def addEvents(self, modelSetKey: str, eventsEncodedPayload: str) -> Deferred:
         if not eventsEncodedPayload:
             return
 
-        yield self._eventdbImportController.importEvents(modelSetName,
+        yield self._eventdbImportController.importEvents(modelSetKey,
                                                          eventsEncodedPayload)
 
     @inlineCallbacks
-    def removeEvents(self, modelSetName: str, eventKeys: List[str]) -> Deferred:
+    def removeEvents(self, modelSetKey: str, eventKeys: List[str]) -> Deferred:
         if not eventKeys:
             return
 
-        yield self._eventdbImportController.deleteEvents(modelSetName, eventKeys)
+        yield self._eventdbImportController.deleteEvents(modelSetKey, eventKeys)
+
+    @inlineCallbacks
+    def replaceProperties(self, modelSetKey: str,
+                          propertiesEncodedPayload: str) -> Deferred:
+        if not propertiesEncodedPayload:
+            return
+
+        yield self._eventdbImportController.replaceProperties(modelSetKey,
+                                                              propertiesEncodedPayload)

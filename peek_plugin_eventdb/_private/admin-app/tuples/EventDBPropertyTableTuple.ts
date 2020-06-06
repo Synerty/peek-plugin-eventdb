@@ -17,6 +17,7 @@ export class EventDBPropertyTableTuple extends Tuple {
 
     useForFilter: boolean | null;
     useForDisplay: boolean | null;
+    useForPopup: boolean | null;
 
     displayByDefaultOnSummaryView: boolean | null;
     displayByDefaultOnDetailView: boolean | null;

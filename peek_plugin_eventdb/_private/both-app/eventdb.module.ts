@@ -17,7 +17,9 @@ import {EventDBEventListComponent} from "./event-list-component/event-list.compo
 import {EventDBFilterComponent} from "./event-filter-component/event-filter.component";
 import {EventDBColumnComponent} from "./event-column-component/event-column.component";
 import {EventDBPageComponent} from "./event-page-component/event-page.component";
-
+import {NzDatePickerModule} from "ng-zorro-antd/date-picker";
+import {NzGridModule} from "ng-zorro-antd/grid";
+import {NzSwitchModule} from "ng-zorro-antd/switch";
 // Import a small abstraction library to switch between nativescript and web
 import {PeekModuleFactory} from "@synerty/peek-util-web";
 
@@ -47,6 +49,9 @@ export const pluginRoutes: Routes = [
         NzModalModule,
         NzSelectModule,
         NzInputModule,
+        NzDatePickerModule,
+        NzGridModule,
+        NzSwitchModule,
         AngularFontAwesomeModule
     ],
     exports: [
