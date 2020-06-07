@@ -5,6 +5,7 @@ import {EventDBColumnComponent} from "../event-column-component/event-column.com
 import {EventDBFilterComponent} from "../event-filter-component/event-filter.component";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {EventDBEventListComponent} from "../event-list-component/event-list.component";
+import {PrivateEventDBService} from "@peek/peek_plugin_eventdb/_private/PrivateEventDBService";
 
 @Component({
     selector: "plugin-eventdb-event-page",
@@ -30,7 +31,8 @@ export class EventDBPageComponent extends ComponentLifecycleEventEmitter impleme
 
     constructor(private titleService: TitleService,
                 private route: ActivatedRoute,
-                private router: Router) {
+                private router: Router,
+                private eventService: PrivateEventDBService) {
         super();
 
         titleService.setTitle("Alarm and Events");
@@ -50,8 +52,8 @@ export class EventDBPageComponent extends ComponentLifecycleEventEmitter impleme
                     );
                 }
 
-                let columns = params["columns"] || vars["columns"] || '';
-                let filter = params["filter"] || vars["filter"] || '{}';
+                let columns = params["columns"] || vars["columns"] || "";
+                let filter = params["filter"] || vars["filter"] || "{}";
                 const modelSetKey = params["modelSetKey"] || vars["modelSetKey"]
                     || this.modelSetKey; // HARDCODED
                 const color = (params["color"] || vars["color"]) == "true";
@@ -67,6 +69,20 @@ export class EventDBPageComponent extends ComponentLifecycleEventEmitter impleme
                 // Give the change detection a chance to run
                 setTimeout(() => this.eventList.updateColors(color), 100);
             });
+    }
+
+    get downloadUrl(): string {
+        const columnPropKeys = this.eventColumns.columnPropKeys;
+        const filter = this.eventFilter.filter;
+        if (filter == null)
+            return '';
+
+        const tupleSelector = this.eventService
+            .eventTupleSelector(this.modelSetKey, filter.dateTimeRange, filter.criteria);
+        tupleSelector.selector["columnPropKeys"] = columnPropKeys;
+
+        return "/peek_plugin_eventdb/download/events?tupleSelector="
+            + encodeURIComponent(tupleSelector.toOrderedJsonStr());
     }
 
     updateRoute(): void {

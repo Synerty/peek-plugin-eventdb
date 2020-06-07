@@ -17,6 +17,16 @@
                 (columnChange)="eventList.updateColumn($event);updateRoute()"></plugin-eventdb-event-column>
         </div>
 
+        <!-- Event List -->
+        <!-- TODO <i nz-icon nzType="download"></i> -->
+        <div nz-col nzSm="2">
+            <a nz-button nzType="default"
+               [href]="downloadUrl"
+               download="peek_events.csv">
+                Download
+            </a>
+        </div>
+
         <!-- Color Switch -->
         <div nz-col nzSm="2">
             <nz-switch [ngModel]="eventList.colorsEnabled"

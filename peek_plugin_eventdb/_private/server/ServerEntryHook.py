@@ -1,9 +1,5 @@
 import logging
 
-from twisted.internet.defer import inlineCallbacks
-from twisted.web.resource import Resource
-from vortex.DeferUtil import deferToThreadWrapWithLogger
-
 from peek_plugin_base.server.PluginServerEntryHookABC import PluginServerEntryHookABC
 from peek_plugin_base.server.PluginServerStorageEntryHookABC import \
     PluginServerStorageEntryHookABC
@@ -13,17 +9,20 @@ from peek_plugin_eventdb._private.server.controller.EventDBController import \
     EventDBController
 from peek_plugin_eventdb._private.server.controller.EventDBImportController import \
     EventDBImportController
+from peek_plugin_eventdb._private.server.download_resources.DownloadEventsResource import \
+    DownloadEventsResource
 from peek_plugin_eventdb._private.storage import DeclarativeBase
 from peek_plugin_eventdb._private.storage.DeclarativeBase import loadStorageTuples
 from peek_plugin_eventdb._private.tuples import loadPrivateTuples
 from peek_plugin_eventdb.tuples import loadPublicTuples
+from txhttputil.site.BasicResource import BasicResource
+
 from .EventDBApi import EventDBApi
 from .TupleActionProcessor import makeTupleActionProcessorHandler
 from .TupleDataObservable import makeTupleDataObservableHandler
 from .admin_backend import makeAdminBackendHandlers
 from .controller.AdminStatusController import AdminStatusController
 from .controller.MainController import MainController
-from ..storage.Setting import globalProperties, globalSetting
 
 logger = logging.getLogger(__name__)
 
@@ -123,9 +122,12 @@ class ServerEntryHook(PluginServerEntryHookABC, PluginServerStorageEntryHookABC,
         # noinspection PyTypeChecker
         eventdbImportController.setReadApi(self._api.readApi)
 
+        downloadResource = BasicResource()
+        eventsResource = DownloadEventsResource(self.dbSessionCreator)
+        # noinspection PyTypeChecker
+        downloadResource.putChild(b'events', eventsResource)
 
-        resource = Resource()
-        self.platform.addServerResource(b'download', resource)
+        self.platform.addServerResource(b'download', downloadResource)
 
         logger.debug("Started")
 

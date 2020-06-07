@@ -1,5 +1,7 @@
 import logging
+from collections import namedtuple
 from datetime import datetime
+from typing import Dict
 
 from peek_plugin_base.storage.DbConnection import DbSessionCreator
 from peek_plugin_base.storage.RunPyInPg import runPyInPg
@@ -12,7 +14,6 @@ from vortex.TupleSelector import TupleSelector
 from vortex.handler.TupleDataObservableHandler import TuplesProviderABC
 
 logger = logging.getLogger(__name__)
-
 
 class EventDBEventTupleProvider(TuplesProviderABC):
     def __init__(self, dbSessionCreator: DbSessionCreator):
@@ -44,7 +45,16 @@ class EventDBEventTupleProvider(TuplesProviderABC):
 
     @classmethod
     def _loadInPg(cls, plpy, filt: dict, tupleSelectorStr: str):
-        tupleSelector = TupleSelector().fromJsonStr(tupleSelectorStr)
+        tupleSelector = TupleSelector.fromJsonStr(tupleSelectorStr)
+        tuples = cls.loadTuples(plpy, tupleSelector)
+
+        payloadEnvelope = Payload(filt=filt, tuples=tuples).makePayloadEnvelope()
+        vortexMsg = payloadEnvelope.toVortexMsg()
+        return vortexMsg.decode()
+
+
+    @classmethod
+    def loadTuples(cls, plpy, tupleSelector: TupleSelector):
 
         selector = tupleSelector.selector
         modelSetKey = selector.get('modelSetKey')
@@ -56,16 +66,7 @@ class EventDBEventTupleProvider(TuplesProviderABC):
         if not modelSetKey:
             raise Exception("modelSetKey is None")
 
-        # Load in the ModelSet ID
-        sql = """
-            SELECT id FROM pl_eventdb."EventDBModelSet" where key = '%s'
-            """ % modelSetKey
-
-        rows = plpy.execute(sql, 1)
-        if not len(rows):
-            raise Exception("ModelSet with key %s not found" % modelSetKey)
-
-        modelSetId = rows[0]["id"]
+        modelSetId = cls.getModelSetId(plpy, modelSetKey)
 
         sql = cls._makeSql(singleCriterias, multiCriterias,
                            modelSetId, newestDateTime, oldestDateTime)
@@ -92,9 +93,21 @@ class EventDBEventTupleProvider(TuplesProviderABC):
                                                 key=row["key"],
                                                 value=row["value"]))
 
-        payloadEnvelope = Payload(filt=filt, tuples=tuples).makePayloadEnvelope()
-        vortexMsg = payloadEnvelope.toVortexMsg()
-        return vortexMsg.decode()
+        return tuples
+
+    @classmethod
+    def getModelSetId(cls, plpy, modelSetKey) -> int:
+        # Load in the ModelSet ID
+        sql = """
+              SELECT id FROM pl_eventdb."EventDBModelSet" where key = '%s'
+              """ % modelSetKey
+        rows = plpy.execute(sql, 1)
+
+        if not len(rows):
+            raise Exception("ModelSet with key %s not found" % modelSetKey)
+
+        modelSetId = rows[0]["id"]
+        return modelSetId
 
     @classmethod
     def _makeSql(cls, singleCriterias,

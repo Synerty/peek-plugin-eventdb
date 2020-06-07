@@ -57,6 +57,14 @@ export class EventDBColumnComponent extends ComponentLifecycleEventEmitter
 
     }
 
+    get columnPropKeys(): string[] {
+        const result = [];
+        for (let prop of this.selectedProps) {
+            result.push(prop.key);
+        }
+        return result;
+    }
+
     get paramsForRoute(): string {
         const propKeys = [];
         for (let prop of this.selectedProps) {
@@ -83,7 +91,7 @@ export class EventDBColumnComponent extends ComponentLifecycleEventEmitter
                 .filter(prop => prop.displayByDefaultOnDetailView);
 
         } else {
-            const propKeys = this.lastRouteParams.split(',');
+            const propKeys = this.lastRouteParams.split(",");
             this.selectedProps = [];
 
             for (let propKey of propKeys) {

@@ -107,6 +107,10 @@ export class EventDBFilterComponent extends ComponentLifecycleEventEmitter
 
     }
 
+    get filter(): FilterI {
+        return this.lastFilter;
+    }
+
     get paramsForRoute(): RouteFilterI {
         const tsUtil = new SerialiseUtil();
         const cri = {};
