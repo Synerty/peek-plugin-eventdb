@@ -10,6 +10,7 @@ from peek_plugin_eventdb._private.PluginNames import eventdbFilt, eventdbObserva
 from peek_plugin_eventdb._private.storage.DeclarativeBase import loadStorageTuples
 from peek_plugin_eventdb._private.tuples import loadPrivateTuples
 from peek_plugin_eventdb.tuples import loadPublicTuples
+from txhttputil.downloader.HttpResourceProxy import HttpResourceProxy
 
 logger = logging.getLogger(__name__)
 
@@ -49,6 +50,17 @@ class ClientEntryHook(PluginClientEntryHookABC):
             observerName="Proxy to devices"
         )
         self._loadedObjects.append(tupleDataObservableProxyHandler)
+
+        # Support file downloads for device updates
+        # noinspection PyTypeChecker
+        proxyResource = HttpResourceProxy(
+            self.platform.peekServerHost,
+            self.platform.peekServerHttpPort
+        )
+
+        # Matches resource path on server
+        # noinspection PyTypeChecker
+        self.platform.addDesktopResource(b'download', proxyResource)
 
         logger.debug("Started")
 

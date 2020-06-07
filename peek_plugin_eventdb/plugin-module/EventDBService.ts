@@ -2,6 +2,7 @@ import {Observable} from "rxjs";
 import {EventDBPropertyCriteriaTuple} from "./tuples/EventDBPropertyCriteriaTuple";
 import {EventDBEventTuple} from "./tuples/EventDBEventTuple";
 import {EventDBPropertyTuple} from "./tuples/EventDBPropertyTuple";
+import {TupleSelector} from "@synerty/vortexjs";
 
 export interface EventDateTimeRangeI {
     oldestDateTime?: Date | null;
@@ -35,6 +36,23 @@ export abstract class EventDBService {
         modelSetKey: string,
         dateTimeRange: EventDateTimeRangeI,
         criteria: EventDBPropertyCriteriaTuple[]): Observable<EventDBEventTuple[]> ;
+
+    /** Event Tuples Selector
+     *
+     * This method will return a tuple selector used to select the data from the
+     * server.
+     *
+     * This method is provided to allow other plugins to deduplciate calls to
+     * eventTuples.
+     *
+     * @param modelSetKey: The key of the model set to load data from.
+     * @param dateTimeRange: The dateTime window to load events from.
+     * @param criteria: Additional criteria to filter out events.
+     */
+    abstract eventTupleSelector(
+        modelSetKey: string,
+        dateTimeRange: EventDateTimeRangeI,
+        criteria: EventDBPropertyCriteriaTuple[]): TupleSelector ;
 }
 
 

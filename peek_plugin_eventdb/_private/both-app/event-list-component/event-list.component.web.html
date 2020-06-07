@@ -7,8 +7,9 @@
     <thead>
     <tr>
         <th>Date&nbsp;&nbsp;&nbsp;&nbsp;(Loaded {{events.length}})</th>
+        <!-- TODO: Enable sorting in nz-zorro 9 -->
         <th *ngFor="let prop of displayProps"
-            nzShowSort
+            [nzShowSort]="false"
             [nzSortKey]="'value.' + prop.key">{{ prop.name }}
         </th>
     </tr>
@@ -19,8 +20,10 @@
         (mouseleave)="tooltipExit($event, event)"
         (click)="showSummaryPopup($event, event)"
         [ngStyle]="{'background-color': colorValue(event)}">
-        <td>
-            {{ event.dateTime | date:'hh:mm:ss.SSS dd-MMM-yyyy' }}
+        <td style="white-space: normal">
+            <span style="white-space: nowrap">{{ event.dateTime | date:'hh:mm:ss.SSS' }}</span>
+            <span>&nbsp;</span>
+            <span style="white-space: nowrap">{{ event.dateTime | date:'dd-MMM-yyyy' }}</span>
         </td>
         <td *ngFor="let prop of displayProps">
             {{displayValue(event, prop)}}

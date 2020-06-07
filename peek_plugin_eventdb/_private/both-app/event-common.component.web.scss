@@ -1,3 +1,10 @@
+@import '~@synerty/peek-theme/scss/variables.web';
+
+.margin {
+    margin-top: $general_margin_1;
+    margin-bottom: $general_margin_1;
+}
+
 nz-select {
     width: 100%;
 }

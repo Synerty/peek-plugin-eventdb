@@ -3,7 +3,6 @@ from datetime import datetime
 
 from peek_plugin_base.storage.DbConnection import DbSessionCreator
 from peek_plugin_base.storage.RunPyInPg import runPyInPg
-from peek_plugin_eventdb._private.storage.EventDBPropertyTable import EventDBPropertyTable
 from peek_plugin_eventdb.tuples import loadPublicTuples
 from peek_plugin_eventdb.tuples.EventDBEventTuple import EventDBEventTuple
 from twisted.internet.defer import Deferred, inlineCallbacks
@@ -49,7 +48,8 @@ class EventDBEventTupleProvider(TuplesProviderABC):
 
         selector = tupleSelector.selector
         modelSetKey = selector.get('modelSetKey')
-        criterias = selector.get('criteria', [])
+        singleCriterias = selector.get('singleCriterias', {})
+        multiCriterias = selector.get('multiCriterias', {})
         newestDateTime = selector.get('newestDateTime')
         oldestDateTime = selector.get('oldestDateTime')
 
@@ -67,7 +67,8 @@ class EventDBEventTupleProvider(TuplesProviderABC):
 
         modelSetId = rows[0]["id"]
 
-        sql = cls._makeSql(criterias, modelSetId, newestDateTime, oldestDateTime)
+        sql = cls._makeSql(singleCriterias, multiCriterias,
+                           modelSetId, newestDateTime, oldestDateTime)
 
         # TODO, We probably need some pagination.
 
@@ -96,8 +97,9 @@ class EventDBEventTupleProvider(TuplesProviderABC):
         return vortexMsg.decode()
 
     @classmethod
-    def _makeSql(cls, criterias, modelSetId, newestDateTime, oldestDateTime):
-        P = EventDBPropertyTable
+    def _makeSql(cls, singleCriterias,
+                 multiCriterias,
+                 modelSetId, newestDateTime, oldestDateTime):
         # Create the basic SQL
         sql = """
             SELECT "dateTime", key, value
@@ -114,45 +116,44 @@ class EventDBEventTupleProvider(TuplesProviderABC):
             sql += """     AND timestamp with time zone '%s' <= "dateTime" \n""" \
                    % oldestDateTime
 
-        for cri in criterias:
-            if not cri.value:
+        for propKey, value in singleCriterias.items():
+            if not value:
                 continue
 
-            if cri.property.showFilterAs == P.SHOW_FILTER_AS_FREE_TEXT:
-                assert isinstance(cri.value, str), "Property value isn't a str"
-                sql += """     AND "value"->>'%s' like '%s' \n""" \
-                       % (cri.property.key, '%' + cri.value + '%')
+            assert isinstance(value, str), "Property value is not a str"
 
-            elif cri.property.showFilterAs == P.SHOW_FILTER_SELECT_MANY \
-                or cri.property.showFilterAs == P.SHOW_FILTER_SELECT_ONE:
+            sql += """     AND "value"->>'%s' ilike '%s' \n""" \
+                   % (propKey, '%' + value + '%')
 
-                if not isinstance(cri.value, list):
-                    cri.value = [cri.value]
+        for propKey, values in multiCriterias.items():
+            if not values:
+                continue
 
-                criSql = []
-                for value in cri.value:
-                    try:
-                        quotedVal = int(value)
+            assert isinstance(values, list), "Property values is not a list"
 
-                    except ValueError:
-                        if value.lower() == 'true':
-                            quotedVal = 'true'
+            criSql = []
+            for value in values:
+                try:
+                    quotedVal = int(value)
 
-                        elif value.lower() == 'false':
-                            quotedVal = 'false'
+                except ValueError:
+                    if value.lower() == 'true':
+                        quotedVal = 'true'
 
-                        else:
-                            quotedVal = '"%s"' % value
+                    elif value.lower() == 'false':
+                        quotedVal = 'false'
 
-                    criSql.append("""     "value" @> '{"%s":%s}'::jsonb """
-                                  % (cri.property.key, quotedVal))
+                    else:
+                        quotedVal = '"%s"' % value
 
-                sql += """     AND (%s) \n""" % '\n OR '.join(criSql)
+                criSql.append("""     "value" @> '{"%s":%s}'::jsonb """
+                              % (propKey, quotedVal))
 
-                sql += """ LIMIT 5000
-                           ORDER BY "dateTime" """
+            sql += """     AND (%s) \n""" % '\n OR '.join(criSql)
 
-            else:
-                raise Exception("Unknown criteria type")
+        sql += """
+               ORDER BY "dateTime"
+               LIMIT 5000
+               """
 
         return sql

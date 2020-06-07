@@ -1,7 +1,10 @@
 import {Injectable} from "@angular/core";
 import {ComponentLifecycleEventEmitter, TupleSelector} from "@synerty/vortexjs";
 import {BehaviorSubject, Observable} from "rxjs";
-import {EventDBPropertyTuple} from "../tuples/EventDBPropertyTuple";
+import {
+    EventDBPropertyShowFilterAsEnum,
+    EventDBPropertyTuple
+} from "../tuples/EventDBPropertyTuple";
 import {EventDBPropertyCriteriaTuple} from "../tuples/EventDBPropertyCriteriaTuple";
 import {EventDBEventTuple} from "../tuples/EventDBEventTuple";
 import {EventDateTimeRangeI, EventDBService} from "../EventDBService";
@@ -79,12 +82,7 @@ export class PrivateEventDBService extends ComponentLifecycleEventEmitter
                 " or an empty string");
         }
 
-        const ts = new TupleSelector(EventDBEventTuple.tupleName, {
-            modelSetKey: modelSetKey,
-            newestDateTime: dateTimeRange != null ? dateTimeRange.newestDateTime : null,
-            oldestDateTime: dateTimeRange != null ? dateTimeRange.oldestDateTime : null,
-            criteria: criteria
-        });
+        const ts = this.eventTupleSelector(modelSetKey, dateTimeRange, criteria);
 
         const observable: Observable<EventDBEventTuple[]> =
             <Observable<EventDBEventTuple[]>>this.tupleService
@@ -106,6 +104,37 @@ export class PrivateEventDBService extends ComponentLifecycleEventEmitter
                 }
                 return events;
             }));
+    }
 
+    eventTupleSelector(modelSetKey: string,
+                       dateTimeRange: EventDateTimeRangeI | null = null,
+                       criteria: EventDBPropertyCriteriaTuple[] = []): TupleSelector {
+        const P = EventDBPropertyShowFilterAsEnum;
+
+        const singleCriterias = {};
+        const multiCriterias = {};
+
+        for (let cri of criteria) {
+            if (cri.property.showFilterAs == P.SHOW_FILTER_AS_FREE_TEXT) {
+                singleCriterias[cri.property.key] = cri.value;
+
+            } else if (cri.property.showFilterAs == P.SHOW_FILTER_SELECT_MANY
+                || cri.property.showFilterAs == P.SHOW_FILTER_SELECT_ONE) {
+                // Make sure
+                multiCriterias[cri.property.key] = cri.value
+
+            } else {
+                throw new Error("Unknown Property Type")
+            }
+
+        }
+
+        return new TupleSelector(EventDBEventTuple.tupleName, {
+            modelSetKey: modelSetKey,
+            newestDateTime: dateTimeRange != null ? dateTimeRange.newestDateTime : null,
+            oldestDateTime: dateTimeRange != null ? dateTimeRange.oldestDateTime : null,
+            singleCriterias: singleCriterias,
+            multiCriterias: multiCriterias
+        });
     }
 }

@@ -1,11 +1,9 @@
-import {Component, OnInit} from "@angular/core";
+import {Component, Input, OnInit} from "@angular/core";
 import {PrivateEventDBService} from "@peek/peek_plugin_eventdb/_private/PrivateEventDBService";
 import {EventDBEventTuple, EventDBPropertyTuple} from "@peek/peek_plugin_eventdb/tuples";
 import {DocDbPopupService, DocDbPopupTypeE} from "@peek/peek_plugin_docdb";
 import {eventdbPluginName} from "@peek/peek_plugin_eventdb/_private/PluginNames";
-import {ComponentLifecycleEventEmitter} from "@synerty/vortexjs";
-
-import * as moment from "moment";
+import {ComponentLifecycleEventEmitter, jsonOrderedStringify} from "@synerty/vortexjs";
 import {FilterI} from "../event-filter-component/event-filter.component";
 import {ColumnI} from "../event-column-component/event-column.component";
 
@@ -16,19 +14,21 @@ import {ColumnI} from "../event-column-component/event-column.component";
     styleUrls: ["../event-common.component.web.scss"],
     moduleId: module.id
 })
-export class EventDBEventListComponent extends ComponentLifecycleEventEmitter implements OnInit {
+export class EventDBEventListComponent extends ComponentLifecycleEventEmitter
+    implements OnInit {
+
+    @Input("modelSetKey")
+    modelSetKey: string;
 
     private lastSubscription = null;
-    private lastFilter: FilterI;
+    private lastLoadFingerprint: string = '';
 
-    private lastFrozen: boolean = false;
-    private colorsEnabled: boolean = false;
+    colorsEnabled: boolean = false;
 
     events: EventDBEventTuple[] = [];
     props: EventDBPropertyTuple[] = [];
     displayProps: EventDBPropertyTuple[] = [];
     isDataLoading = true;
-    modelSetKey = "pofDiagram";
 
     constructor(private objectPopupService: DocDbPopupService,
                 private eventService: PrivateEventDBService) {
@@ -36,27 +36,11 @@ export class EventDBEventListComponent extends ComponentLifecycleEventEmitter im
     }
 
     ngOnInit() {
-        this.updateFilter({
-            modelSetKey: this.modelSetKey,
-            dateTimeRange: {
-                oldestDateTime: moment().subtract(2, "hours").toDate(),
-                newestDateTime: null,
-            },
-            criteria: [],
-        });
-
         this.eventService.propertyTuples(this.modelSetKey)
             .takeUntil(this.onDestroyEvent)
             .subscribe((props: EventDBPropertyTuple[]) => {
-
                 // sort properties by order.
                 this.props = props.sort((a, b) => a.order - b.order);
-
-                // filter for default display properties.
-                this.updateColumn({
-                    selectedProps: props
-                        .filter(prop => prop.displayByDefaultOnDetailView)
-                });
             });
     }
 
@@ -69,9 +53,25 @@ export class EventDBEventListComponent extends ComponentLifecycleEventEmitter im
     }
 
     updateFilter(filter: FilterI) {
+        // Create a string representing the last load
+        const lastLoadFingerprint =
+            this.eventService
+                .eventTupleSelector(filter.modelSetKey,
+                    filter.dateTimeRange, filter.criteria)
+                .toOrderedJsonStr();
+
+        // If we have an active subscription and the fingerprint matches, do nothing
+        if (lastLoadFingerprint == this.lastLoadFingerprint
+            && this.lastSubscription != null) {
+            return;
+        }
+
+        // record the fingerprint
+        this.lastLoadFingerprint = lastLoadFingerprint;
+
+        // Apply the update
         this.events = [];
         this.isDataLoading = true
-        this.lastFilter = filter;
 
         this.unsubUpdates();
 
@@ -81,9 +81,6 @@ export class EventDBEventListComponent extends ComponentLifecycleEventEmitter im
                 this.events = events;
                 this.isDataLoading = false;
             });
-
-        if (this.lastFrozen)
-            this.unsubUpdates();
 
     }
 

@@ -1,8 +1,10 @@
-import {Component, OnInit} from "@angular/core";
-import {ComponentLifecycleEventEmitter} from "@synerty/vortexjs";
-// import {ActivatedRoute, Params} from "@angular/router";
+import {AfterViewInit, Component, ViewChild} from "@angular/core";
+import {ComponentLifecycleEventEmitter, jsonOrderedStringify} from "@synerty/vortexjs";
 import {TitleService} from "@synerty/peek-util";
-
+import {EventDBColumnComponent} from "../event-column-component/event-column.component";
+import {EventDBFilterComponent} from "../event-filter-component/event-filter.component";
+import {ActivatedRoute, Params, Router} from "@angular/router";
+import {EventDBEventListComponent} from "../event-list-component/event-list.component";
 
 @Component({
     selector: "plugin-eventdb-event-page",
@@ -11,39 +13,86 @@ import {TitleService} from "@synerty/peek-util";
 
     moduleId: module.id
 })
-export class EventDBPageComponent extends ComponentLifecycleEventEmitter implements OnInit {
+export class EventDBPageComponent extends ComponentLifecycleEventEmitter implements AfterViewInit {
 
-    constructor(private titleService: TitleService) {
+    @ViewChild("eventFilter", {static: true})
+    eventFilter: EventDBFilterComponent;
+
+    @ViewChild("eventColumns", {static: true})
+    eventColumns: EventDBColumnComponent;
+
+    @ViewChild("eventList", {static: true})
+    eventList: EventDBEventListComponent;
+
+    modelSetKey = "pofDiagram";
+
+    private routeUpdateTimer: any | null = null;
+
+    constructor(private titleService: TitleService,
+                private route: ActivatedRoute,
+                private router: Router) {
         super();
 
         titleService.setTitle("Alarm and Events");
 
     }
 
-    ngOnInit() {
+    ngAfterViewInit() {
+        this.route.params
+            .takeUntil(this.onDestroyEvent)
+            .subscribe((params: Params) => {
+                let vars = {};
 
-        //     this.route.params
-        //         .takeUntil(this.onDestroyEvent)
-        //         .subscribe((params: Params) => {
-        //             let vars = {};
-        //
-        //             if (typeof window !== 'undefined') {
-        //                 window.location.href.replace(
-        //                     /[?&]+([^=&]+)=([^&]*)/gi,
-        //                     (m, key, value) => vars[key] = value
-        //                 );
-        //             }
-        //
-        //             let key = params['key'] || vars['key'];
-        //             let modelSetKey = params['modelSetKey'] || vars['modelSetKey'];
-        //
-        //             this.docDbService.getObjects(modelSetKey, [key])
-        //                 .then((docs: DocumentResultI) => this.loadDoc(docs[key], key));
-        //
-        //         });
+                if (typeof window !== "undefined") {
+                    window.location.href.replace(
+                        /[?&]+([^=&]+)=([^&]*)/gi,
+                        (m, key, value) => vars[key] = value
+                    );
+                }
 
+                let columns = params["columns"] || vars["columns"] || '';
+                let filter = params["filter"] || vars["filter"] || '{}';
+                const modelSetKey = params["modelSetKey"] || vars["modelSetKey"]
+                    || this.modelSetKey; // HARDCODED
+                const color = (params["color"] || vars["color"]) == "true";
+
+                if (modelSetKey == null) return;
+
+                filter = JSON.parse(filter);
+
+                this.modelSetKey = modelSetKey;
+                this.eventColumns.paramsForRoute = columns;
+                this.eventFilter.paramsForRoute = filter;
+
+                // Give the change detection a chance to run
+                setTimeout(() => this.eventList.updateColors(color), 100);
+            });
     }
 
+    updateRoute(): void {
+        // Delay updating to 500ms after the last reason to update the params.
+        if (this.routeUpdateTimer != null)
+            clearTimeout(this.routeUpdateTimer);
+        this.routeUpdateTimer = setTimeout(() => this._updateRoute(), 500);
+    }
 
+    private _updateRoute(): void {
+        this.routeUpdateTimer = null;
+
+        let url = this.router.url.split(";")[0];
+​
+        // Sometimes it can try to position after we've navigated away
+        if (url.indexOf("peek_plugin_eventdb") == -1)
+            return;
+
+        const params = {
+            color: this.eventList.colorsEnabled,
+            modelSetKey: this.modelSetKey,
+            filter: jsonOrderedStringify(this.eventFilter.paramsForRoute),
+            columns: this.eventColumns.paramsForRoute
+        };
+
+        this.router.navigate([url, params]);
+    }
 
 }

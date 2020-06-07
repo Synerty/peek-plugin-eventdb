@@ -9,8 +9,8 @@
     (nzOnCancel)="onCancelClicked()">
 
     <nz-select nzMode="tags" style="width: 100%;" nzPlaceHolder="Tag Mode"
-               [(ngModel)]="selectingProps">
-        <nz-option *ngFor="let prop of props" [nzLabel]="prop.name"
+               [(ngModel)]="selectedProps">
+        <nz-option *ngFor="let prop of allProps" [nzLabel]="prop.name"
                    [nzValue]="prop"></nz-option>
     </nz-select>
 

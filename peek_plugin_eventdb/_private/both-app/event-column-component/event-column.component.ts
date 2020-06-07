@@ -1,4 +1,4 @@
-import {Component, OnInit, Output, EventEmitter} from "@angular/core";
+import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
 import {EventDBPropertyTuple} from "@peek/peek_plugin_eventdb/tuples";
 import {PrivateEventDBService} from "@peek/peek_plugin_eventdb/_private/PrivateEventDBService";
 import {ComponentLifecycleEventEmitter} from "@synerty/vortexjs";
@@ -14,19 +14,23 @@ export interface ColumnI {
     styleUrls: ["../event-common.component.web.scss"],
     moduleId: module.id
 })
-export class EventDBColumnComponent extends ComponentLifecycleEventEmitter implements OnInit {
+export class EventDBColumnComponent extends ComponentLifecycleEventEmitter
+    implements OnInit {
+
+    @Input("modelSetKey")
+    modelSetKey: string;
+
+    @Output("columnChange")
+    columnChange = new EventEmitter<ColumnI>();
 
     isVisible = false;
     isOkLoading = false;
 
-    props: EventDBPropertyTuple[] = [];
-    selectingProps: EventDBPropertyTuple[] = [];
+    private propByKey: { [key: string]: EventDBPropertyTuple } = {};
+    allProps: EventDBPropertyTuple[] = [];
+    selectedProps: EventDBPropertyTuple[] = [];
 
-    // TODO: have this coded in a single source with @Input()
-    modelSetKey = "pofDiagram";
-
-    @Output("columnChange")
-    columnChange = new EventEmitter<ColumnI>();
+    private lastRouteParams: string | null = null;
 
     constructor(private balloonMsg: Ng2BalloonMsgService,
                 private eventService: PrivateEventDBService) {
@@ -38,13 +42,70 @@ export class EventDBColumnComponent extends ComponentLifecycleEventEmitter imple
         this.eventService.propertyTuples(this.modelSetKey)
             .takeUntil(this.onDestroyEvent)
             .subscribe((props: EventDBPropertyTuple[]) => {
-                this.props = props
+                this.allProps = props
+                    .filter(prop => prop.useForDisplay)
                     .sort((a, b) => a.order - b.order);
 
-                this.selectingProps = this.props
-                    .filter(prop => prop.displayByDefaultOnDetailView);
+                this.propByKey = {};
+                for (let prop of this.allProps) {
+                    this.propByKey[prop.key] = prop;
+                }
+
+                // Give the change detection a chance to run
+                setTimeout(() => this.applyRouteParams(), 100);
             });
 
+    }
+
+    get paramsForRoute(): string {
+        const propKeys = [];
+        for (let prop of this.selectedProps) {
+            propKeys.push(prop.key);
+        }
+        return propKeys.join();
+    }
+
+    set paramsForRoute(params: string) {
+        this.lastRouteParams = params;
+        // Give the change detection a chance to run
+        setTimeout(() => this.applyRouteParams(), 100);
+    }
+
+    private applyRouteParams() {
+        if (this.allProps.length == 0)
+            return;
+
+        if (this.lastRouteParams == null)
+            return;
+
+        if (this.lastRouteParams.length == 0) {
+            this.selectedProps = this.allProps
+                .filter(prop => prop.displayByDefaultOnDetailView);
+
+        } else {
+            const propKeys = this.lastRouteParams.split(',');
+            this.selectedProps = [];
+
+            for (let propKey of propKeys) {
+                const prop: EventDBPropertyTuple = this.propByKey[propKey];
+                if (prop == null)
+                    continue;
+
+                this.selectedProps.push(prop);
+            }
+        }
+
+        // Clear the route data
+        this.lastRouteParams = null;
+
+        // Update the filter
+        this.updateColumns();
+    }
+
+    private updateColumns() {
+        this.columnChange.emit({
+            selectedProps: this.selectedProps
+        });
     }
 
     showModal(): void {
@@ -54,9 +115,7 @@ export class EventDBColumnComponent extends ComponentLifecycleEventEmitter imple
     onOkClicked(): void {
         this.isOkLoading = true;
 
-        this.columnChange.emit({
-            selectedProps: this.selectingProps
-        });
+        this.updateColumns();
 
         setTimeout(() => {
             this.isVisible = false;
@@ -67,12 +126,12 @@ export class EventDBColumnComponent extends ComponentLifecycleEventEmitter imple
     resetDefaults(): void {
         this.isOkLoading = true;
 
-        this.selectingProps = this.props
+        this.selectedProps = this.allProps
             .filter(prop => prop.displayByDefaultOnDetailView);
     }
 
     onCancelClicked(): void {
-        this.selectingProps = [];
+        this.selectedProps = [];
         this.isVisible = false;
     }
 }

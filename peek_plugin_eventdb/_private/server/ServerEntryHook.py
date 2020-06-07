@@ -1,6 +1,7 @@
 import logging
 
 from twisted.internet.defer import inlineCallbacks
+from twisted.web.resource import Resource
 from vortex.DeferUtil import deferToThreadWrapWithLogger
 
 from peek_plugin_base.server.PluginServerEntryHookABC import PluginServerEntryHookABC
@@ -58,7 +59,6 @@ class ServerEntryHook(PluginServerEntryHookABC, PluginServerStorageEntryHookABC,
     def dbMetadata(self):
         return DeclarativeBase.metadata
 
-    @inlineCallbacks
     def start(self):
         """ Start
 
@@ -66,7 +66,6 @@ class ServerEntryHook(PluginServerEntryHookABC, PluginServerStorageEntryHookABC,
         Place any custom initialiastion steps here.
 
         """
-
         # ----------------
         # create the Status Controller
         statusController = AdminStatusController()
@@ -121,10 +120,12 @@ class ServerEntryHook(PluginServerEntryHookABC, PluginServerStorageEntryHookABC,
         # ----------------
         # Start the queue controller
 
-        settings = yield self._loadSettings()
-
         # noinspection PyTypeChecker
         eventdbImportController.setReadApi(self._api.readApi)
+
+
+        resource = Resource()
+        self.platform.addServerResource(b'download', resource)
 
         logger.debug("Started")
 
@@ -159,15 +160,3 @@ class ServerEntryHook(PluginServerEntryHookABC, PluginServerStorageEntryHookABC,
         platform service.
         """
         return self._api
-
-    @deferToThreadWrapWithLogger(logger)
-    def _loadSettings(self):
-        dbSession = self.dbSessionCreator()
-        try:
-            return {globalProperties[p.key]: p.value
-                    for p in globalSetting(dbSession).propertyObjects}
-
-        finally:
-            dbSession.close()
-
-    ###### Implement PluginServerWorkerEntryHookABC
