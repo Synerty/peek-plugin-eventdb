@@ -14,16 +14,17 @@
         </th>
     </tr>
     </thead>
-    <tbody>
-    <tr *ngFor="let event of eventsTable.data"
-        (mouseenter)="tooltipEnter($event, event)"
-        (mouseleave)="tooltipExit($event, event)"
-        (click)="showSummaryPopup($event, event)"
-        [ngStyle]="{'background-color': colorValue(event)}">
+    <tbody *ngFor="let event of eventsTable.data"
+           (mouseenter)="tooltipEnter($event, event)"
+           (mouseleave)="tooltipExit($event, event)"
+           (click)="showSummaryPopup($event, event)">
+    <tr [ngStyle]="{'background-color': colorValue(event)}">
         <td style="white-space: normal">
-            <span style="white-space: nowrap">{{ event.dateTime | date:'HH:mm:ss.SSS' }}</span>
+            <span
+                style="white-space: nowrap">{{ event.dateTime | date:'HH:mm:ss.SSS' }}</span>
             <span>&nbsp;</span>
-            <span style="white-space: nowrap">{{ event.dateTime | date:'dd-MMM-yyyy' }}</span>
+            <span
+                style="white-space: nowrap">{{ event.dateTime | date:'dd-MMM-yyyy' }}</span>
         </td>
         <td *ngFor="let prop of displayProps">
             {{displayValue(event, prop)}}

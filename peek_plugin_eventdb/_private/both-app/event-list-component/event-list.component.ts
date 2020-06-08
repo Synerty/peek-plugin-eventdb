@@ -123,7 +123,7 @@ export class EventDBEventListComponent extends ComponentLifecycleEventEmitter
     private getDocDBPopupKey(event: EventDBEventTuple): string | null {
         for (let prop of this.props) {
             if (prop.useForPopup && event.value[prop.key] != null) {
-                return event.value[prop.key].toLowerCase();
+                return event.value[prop.key];
             }
         }
         return null;
@@ -155,6 +155,7 @@ export class EventDBEventListComponent extends ComponentLifecycleEventEmitter
         if (docdbPopupKey == null)
             return;
 
+        this.objectPopupService.hidePopup(DocDbPopupTypeE.tooltipPopup);
         this.objectPopupService
             .showPopup(
                 DocDbPopupTypeE.summaryPopup,
