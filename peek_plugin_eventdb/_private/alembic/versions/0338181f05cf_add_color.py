@@ -20,7 +20,7 @@ import geoalchemy2
 
 
 def upgrade():
-    op.add_column('EventDBPropertyValue', sa.Column('color', sa.Boolean()),
+    op.add_column('EventDBPropertyValue', sa.Column('color', sa.String()),
                   schema='pl_eventdb')
 
 
