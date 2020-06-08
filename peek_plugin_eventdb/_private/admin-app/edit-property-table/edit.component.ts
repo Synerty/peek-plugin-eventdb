@@ -39,8 +39,8 @@ export class EditPropertyComponent extends ComponentLifecycleEventEmitter {
 
     showFilterAsOptions = [
         {num: 1, text: "Free Text"},
-        {num: 2, text: "Check Boxes"},
-        {num: 3, text: "Drop Down"},
+        {num: 2, text: "Select Many"},
+        {num: 3, text: "Select One"},
     ];
 
     constructor(private balloonMsg: Ng2BalloonMsgService,

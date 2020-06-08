@@ -21,7 +21,7 @@
         (click)="showSummaryPopup($event, event)"
         [ngStyle]="{'background-color': colorValue(event)}">
         <td style="white-space: normal">
-            <span style="white-space: nowrap">{{ event.dateTime | date:'hh:mm:ss.SSS' }}</span>
+            <span style="white-space: nowrap">{{ event.dateTime | date:'HH:mm:ss.SSS' }}</span>
             <span>&nbsp;</span>
             <span style="white-space: nowrap">{{ event.dateTime | date:'dd-MMM-yyyy' }}</span>
         </td>

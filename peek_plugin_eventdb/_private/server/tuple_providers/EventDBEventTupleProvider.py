@@ -165,7 +165,7 @@ class EventDBEventTupleProvider(TuplesProviderABC):
             sql += """     AND (%s) \n""" % '\n OR '.join(criSql)
 
         sql += """
-               ORDER BY "dateTime"
+               ORDER BY "dateTime" DESC
                LIMIT 5000
                """
 
