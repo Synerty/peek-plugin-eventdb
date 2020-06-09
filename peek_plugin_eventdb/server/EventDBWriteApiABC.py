@@ -1,76 +1,53 @@
+from abc import ABCMeta, abstractmethod
 from typing import List
 
-from abc import ABCMeta, abstractmethod
 from twisted.internet.defer import Deferred
-
-from peek_plugin_eventdb.tuples.ImportEventDBItemTuple import ImportEventDBItemTuple
-from peek_plugin_eventdb.tuples.EventDBDisplayValueUpdateTuple import \
-    EventDBDisplayValueUpdateTuple
-from peek_plugin_eventdb.tuples.EventDBRawValueUpdateTuple import EventDBRawValueUpdateTuple
 
 
 class EventDBWriteApiABC(metaclass=ABCMeta):
     @abstractmethod
-    def updateRawValues(self, modelSetName: str,
-                        updates: List[EventDBRawValueUpdateTuple]) -> Deferred:
-        """ Process Live DB Raw Value Updates
+    def addEvents(self, modelSetKey: str,
+                  eventsEncodedPayload: str) -> Deferred:
+        """ Add Events
 
-        Tells the live db that values have updated in the field, or wherever.
+        Add events to the EventDB
 
-        :param modelSetName:  The name of the model set for the live db
-        :param updates: A list of tuples containing the value updates
+        :param modelSetKey:  The name of the model set for the EventDB
+        :param eventsEncodedPayload: An encoded Payload containing a
+         list of events to insert.
 
-        :return: A deferred that fires when the update is complete.
-        :rtype: bool
-
-        """
-
-    @abstractmethod
-    def importEventDBItems(self, modelSetName: str,
-                          newItems: List[ImportEventDBItemTuple]) -> Deferred:
-        """ Import EventDB Items
-
-        Create new Live DB Items with Raw + Display values
-
-        If an item already exists, it's value is update.
-
-        :param modelSetName:  The name of the model set for the live db
-        :param newItems: A list of tuples containing the value updates
-
-        :return: A deferred that fires when the inserts are complete.
-        :rtype: bool
+        :return: A deferred that fires when the insert is complete.
+        :rtype: None
 
         """
 
     @abstractmethod
-    def prioritiseEventDBValueAcquisition(self, modelSetName: str,
-                                         eventdbKeys: List[str]) -> Deferred:
-        """ Prioritise EventDB Value Acquisitions
+    def removeEvents(self, modelSetKey: str, eventKeys: List[str]) -> Deferred:
+        """ Remove Events
 
-        When this method was first created, it was used for the diagram to tell the
-        RealTime agent which keys to update as they were viewed by the user.
+        Remove events from the EventDB
 
-        :param modelSetName:  The name of the model set for the live db
-        :param eventdbKeys: A list of the eventdb keys to watch
+        :param modelSetKey:  The name of the model set for the EventDB
+        :param eventKeys: An list of event keys to remove.
 
-        :return: A deferred that fires with True
-        :rtype: bool
+        :return: A deferred that fires when the removal is complete.
+        :rtype: None
 
         """
 
     @abstractmethod
-    def pollEventDBValueAcquisition(self, modelSetName: str,
-                                         eventdbKeys: List[str]) -> Deferred:
-        """ Poll EventDB Value Acquisitions
+    def replaceProperties(self, modelSetKey: str,
+                          propertiesEncodedPayload: str) -> Deferred:
+        """ Replace Properties
 
-        Tell the EventDB plugin the eventdbKeys must be polled.
+        Create or Replace the properties for a model set of events.
 
-        This method should be called after a re-import of an existing grid.
+        :param modelSetKey:  The name of the model set for the EventDB
+        :param propertiesEncodedPayload: An encoded Payload containing a
+                payload.tuples=List[EventDBPropertyTuple]
+         list of events to insert.
 
-        :param modelSetName:  The name of the model set for the live db
-        :param eventdbKeys: A list of the eventdb keys to poll
-
-        :return: A deferred that fires with True
-        :rtype: bool
+        :return: A deferred that fires when the create / update is complete.
+        :rtype: None
 
         """

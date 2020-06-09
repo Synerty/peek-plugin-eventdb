@@ -4,8 +4,6 @@ from peek_plugin_eventdb._private.server.controller.EventDBController import \
     EventDBController
 from peek_plugin_eventdb._private.server.controller.EventDBImportController import \
     EventDBImportController
-from peek_plugin_eventdb._private.server.controller.EventDBValueUpdateQueueController import \
-    EventDBValueUpdateQueueController
 from peek_plugin_eventdb.server.EventDBApiABC import EventDBApiABC
 from peek_plugin_eventdb.server.EventDBReadApiABC import EventDBReadApiABC
 from peek_plugin_eventdb.server.EventDBWriteApiABC import EventDBWriteApiABC
@@ -17,8 +15,7 @@ class EventDBApi(EventDBApiABC):
         self._readApi = EventDBReadApi()
         self._writeApi = EventDBWriteApi()
 
-    def setup(self, queueController: EventDBValueUpdateQueueController,
-              eventdbController: EventDBController,
+    def setup(self,  eventdbController: EventDBController,
               eventdbImportController: EventDBImportController,
               dbSessionCreator,
               dbEngine):
@@ -26,8 +23,7 @@ class EventDBApi(EventDBApiABC):
                             dbSessionCreator=dbSessionCreator,
                             dbEngine=dbEngine)
 
-        self._writeApi.setup(queueController=queueController,
-                             eventdbController=eventdbController,
+        self._writeApi.setup(eventdbController=eventdbController,
                              eventdbImportController=eventdbImportController,
                              readApi=self._readApi,
                              dbSessionCreator=dbSessionCreator,

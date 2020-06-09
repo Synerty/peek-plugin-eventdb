@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from vortex.Tuple import addTupleType, TupleField, Tuple
 
 from peek_plugin_eventdb._private.PluginNames import eventdbTuplePrefix
@@ -7,7 +9,6 @@ from peek_plugin_eventdb._private.PluginNames import eventdbTuplePrefix
 class AdminStatusTuple(Tuple):
     __tupleType__ = eventdbTuplePrefix + "AdminStatusTuple"
 
-    rawValueQueueStatus: bool = TupleField(False)
-    rawValueQueueSize: int = TupleField(0)
-    rawValueProcessedTotal: int = TupleField(0)
-    rawValueLastError: str = TupleField()
+    addedEvents: int = TupleField(0)
+    removedEvents: int = TupleField(0)
+    lastActivity: datetime = TupleField()

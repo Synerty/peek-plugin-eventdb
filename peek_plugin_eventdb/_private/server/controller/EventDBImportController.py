@@ -1,13 +1,24 @@
 import logging
+from datetime import datetime
 from typing import List
 
-from twisted.internet.defer import Deferred, inlineCallbacks
-from vortex.Payload import Payload
-
+import pytz
+from peek_plugin_base.storage.DbConnection import DbSessionCreator
+from peek_plugin_base.storage.RunPyInPg import runPyInPg
 from peek_plugin_eventdb._private.server.EventDBReadApi import EventDBReadApi
-from peek_plugin_eventdb._private.worker.tasks.EventDBItemImportTask import \
-    importEventDBItems
-from peek_plugin_eventdb.tuples.ImportEventDBItemTuple import ImportEventDBItemTuple
+from peek_plugin_eventdb._private.server.controller.AdminStatusController import \
+    AdminStatusController
+from peek_plugin_eventdb._private.server.controller.EventDBImportEventsInPgTask import \
+    EventDBImportEventsInPgTask
+from peek_plugin_eventdb._private.server.controller.EventDBImportPropertiesInPgTask import \
+    EventDBImportPropertiesInPgTask
+from peek_plugin_eventdb._private.server.tuple_selector_mappers.NewEventTSUpdateMapper import \
+    NewEventsTupleSelector
+from peek_plugin_eventdb._private.storage.EventDBPropertyTable import EventDBPropertyTable
+from peek_plugin_eventdb.tuples.EventDBPropertyTuple import EventDBPropertyTuple
+from twisted.internet.defer import Deferred, inlineCallbacks
+from vortex.TupleSelector import TupleSelector
+from vortex.handler.TupleDataObservableHandler import TupleDataObservableHandler
 
 logger = logging.getLogger(__name__)
 
@@ -16,53 +27,64 @@ class EventDBImportController:
     """ EventDB Import Controller
     """
 
-    def __init__(self, dbSessionCreator):
+    def __init__(self, dbSessionCreator: DbSessionCreator,
+                 statusController: AdminStatusController,
+                 tupleObservable: TupleDataObservableHandler):
         self._dbSessionCreator = dbSessionCreator
+        self._statusController = statusController
+        self._tupleObservable = tupleObservable
 
     def setReadApi(self, readApi: EventDBReadApi):
         self._readApi = readApi
 
     def shutdown(self):
         self._readApi = None
+        self._tupleObservable = None
 
     @inlineCallbacks
-    def importEventDBItems(self, modelSetKey: str,
-                          newItems: List[ImportEventDBItemTuple]) -> Deferred:
-        """ Import Live DB Items
+    def importEvents(self, modelSetKey: str,
+                     eventsEncodedPayload: str) -> Deferred:
+        count, maxDate, minDate = yield runPyInPg(logger,
+                                                  self._dbSessionCreator,
+                                                  EventDBImportEventsInPgTask.importEvents,
+                                                  None,
+                                                  modelSetKey,
+                                                  eventsEncodedPayload)
 
-        1) set the  coordSetId
+        # Notify anyone watching the events that new ones have arrived.
+        if count:
+            self._tupleObservable \
+                .notifyOfTupleUpdate(NewEventsTupleSelector(minDate, maxDate))
 
-        2) Drop all disps with matching importGroupHash
+        self._statusController.status.addedEvents += count
+        self._statusController.status.lastActivity = datetime.now(pytz.utc)
+        self._statusController.notify()
 
-        :param modelSetKey: The name of the model set
-        :param newItems: The items to add or update to the live db
-        :return:
-        """
+    @inlineCallbacks
+    def deleteEvents(self, modelSetKey: str, eventKeys: List[str]) -> Deferred:
+        count = yield runPyInPg(logger,
+                                self._dbSessionCreator,
+                                EventDBImportEventsInPgTask.deleteEvents,
+                                None,
+                                modelSetKey,
+                                eventKeys)
 
-        newKeys = yield importEventDBItems.delay(
-            modelSetKey=modelSetKey,
-            newItems=newItems
-        )
+        self._statusController.status.removedEvents += count
+        self._statusController.status.lastActivity = datetime.now(pytz.utc)
+        self._statusController.notify()
 
-        newTuples = []
+    @inlineCallbacks
+    def replaceProperties(self, modelSetKey: str,
+                          propertiesEncodedPayload: str) -> Deferred:
+        yield runPyInPg(logger,
+                        self._dbSessionCreator,
+                        EventDBImportPropertiesInPgTask.replaceProperties,
+                        None,
+                        modelSetKey,
+                        propertiesEncodedPayload)
 
-        deferredGenerator = self._readApi.bulkLoadDeferredGenerator(
-            modelSetKey, keyList=newKeys)
-        while True:
-            d = next(deferredGenerator)
-            result = yield d  # List[EventDBDisplayValueTuple]
+        tupleSelector = TupleSelector(EventDBPropertyTable.tupleName(), {})
+        self._tupleObservable.notifyOfTupleUpdate(tupleSelector)
 
-            # The end of the list is marked my an empty result
-            if not result or not result.count:
-                break
-
-            payload = yield Payload().fromEncodedPayloadDefer(result.encodedPayload)
-
-            newTuples += payload.tuples
-
-        # If there are no tuples, do nothing
-        if not newTuples:
-            return
-
-        # Notify the agent of the new keys.
-        self._readApi.itemAdditionsObservable(modelSetKey).on_next(newTuples)
+        tupleSelector = TupleSelector(EventDBPropertyTuple.tupleName(), {})
+        self._tupleObservable.notifyOfTupleUpdate(tupleSelector)

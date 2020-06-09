@@ -1,8 +1,5 @@
 import logging
 
-from twisted.internet.defer import inlineCallbacks
-from vortex.DeferUtil import deferToThreadWrapWithLogger
-
 from peek_plugin_base.server.PluginServerEntryHookABC import PluginServerEntryHookABC
 from peek_plugin_base.server.PluginServerStorageEntryHookABC import \
     PluginServerStorageEntryHookABC
@@ -12,19 +9,20 @@ from peek_plugin_eventdb._private.server.controller.EventDBController import \
     EventDBController
 from peek_plugin_eventdb._private.server.controller.EventDBImportController import \
     EventDBImportController
+from peek_plugin_eventdb._private.server.download_resources.DownloadEventsResource import \
+    DownloadEventsResource
 from peek_plugin_eventdb._private.storage import DeclarativeBase
 from peek_plugin_eventdb._private.storage.DeclarativeBase import loadStorageTuples
 from peek_plugin_eventdb._private.tuples import loadPrivateTuples
 from peek_plugin_eventdb.tuples import loadPublicTuples
+from txhttputil.site.BasicResource import BasicResource
+
 from .EventDBApi import EventDBApi
 from .TupleActionProcessor import makeTupleActionProcessorHandler
 from .TupleDataObservable import makeTupleDataObservableHandler
 from .admin_backend import makeAdminBackendHandlers
 from .controller.AdminStatusController import AdminStatusController
-from .controller.EventDBValueUpdateQueueController import \
-    EventDBValueUpdateQueueController
 from .controller.MainController import MainController
-from ..storage.Setting import VALUE_UPDATER_ENABLED, globalProperties, globalSetting
 
 logger = logging.getLogger(__name__)
 
@@ -60,7 +58,6 @@ class ServerEntryHook(PluginServerEntryHookABC, PluginServerStorageEntryHookABC,
     def dbMetadata(self):
         return DeclarativeBase.metadata
 
-    @inlineCallbacks
     def start(self):
         """ Start
 
@@ -68,7 +65,6 @@ class ServerEntryHook(PluginServerEntryHookABC, PluginServerStorageEntryHookABC,
         Place any custom initialiastion steps here.
 
         """
-
         # ----------------
         # create the Status Controller
         statusController = AdminStatusController()
@@ -108,19 +104,14 @@ class ServerEntryHook(PluginServerEntryHookABC, PluginServerStorageEntryHookABC,
 
         # ----------------
         # Create the Import Controller
-        eventdbImportController = EventDBImportController(self.dbSessionCreator)
+        eventdbImportController = EventDBImportController(self.dbSessionCreator,
+                                                          statusController,
+                                                          tupleObservable)
         self._loadedObjects.append(eventdbImportController)
 
         # ----------------
-        # Create the Queue Controller
-        queueController = EventDBValueUpdateQueueController(self.dbSessionCreator,
-                                                           statusController)
-        self._loadedObjects.append(queueController)
-
-        # ----------------
         # Initialise the API object that will be shared with other plugins
-        self._api.setup(queueController=queueController,
-                        eventdbController=eventdbController,
+        self._api.setup(eventdbController=eventdbController,
                         eventdbImportController=eventdbImportController,
                         dbSessionCreator=self.dbSessionCreator,
                         dbEngine=self.dbEngine)
@@ -128,13 +119,15 @@ class ServerEntryHook(PluginServerEntryHookABC, PluginServerStorageEntryHookABC,
         # ----------------
         # Start the queue controller
 
-        settings = yield self._loadSettings()
-
-        if settings[VALUE_UPDATER_ENABLED]:
-            queueController.start()
-
         # noinspection PyTypeChecker
         eventdbImportController.setReadApi(self._api.readApi)
+
+        downloadResource = BasicResource()
+        eventsResource = DownloadEventsResource(self.dbSessionCreator)
+        # noinspection PyTypeChecker
+        downloadResource.putChild(b'events', eventsResource)
+
+        self.platform.addServerResource(b'download', downloadResource)
 
         logger.debug("Started")
 
@@ -164,20 +157,8 @@ class ServerEntryHook(PluginServerEntryHookABC, PluginServerStorageEntryHookABC,
     @property
     def publishedServerApi(self) -> object:
         """ Published Server API
-    
+
         :return  class that implements the API that can be used by other Plugins on this
         platform service.
         """
         return self._api
-
-    @deferToThreadWrapWithLogger(logger)
-    def _loadSettings(self):
-        dbSession = self.dbSessionCreator()
-        try:
-            return {globalProperties[p.key]: p.value
-                    for p in globalSetting(dbSession).propertyObjects}
-
-        finally:
-            dbSession.close()
-
-    ###### Implement PluginServerWorkerEntryHookABC

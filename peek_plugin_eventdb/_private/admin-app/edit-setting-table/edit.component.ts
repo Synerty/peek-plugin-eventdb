@@ -6,7 +6,8 @@ import {
     TupleLoader,
     VortexService
 } from "@synerty/vortexjs";
-import {SettingPropertyTuple, eventdbFilt} from "@peek/peek_plugin_eventdb/_private";
+import {eventdbFilt} from "../PluginNames";
+import {SettingPropertyTuple} from "../tuples/SettingPropertyTuple";
 
 
 @Component({
