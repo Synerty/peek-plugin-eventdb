@@ -170,7 +170,7 @@ export class EventDBFilterComponent extends ComponentLifecycleEventEmitter
             return tsUtil.fromStr(strIn, SerialiseUtil.T_DATETIME);
         }
 
-        if (this.lastRouteParams.from != null || this.lastRouteParams.from != null) {
+        if (this.lastRouteParams.from != null || this.lastRouteParams.to != null) {
             this.dateTimeRange = {
                 oldestDateTime: nullOrDateStr(this.lastRouteParams.from),
                 newestDateTime: nullOrDateStr(this.lastRouteParams.to)
