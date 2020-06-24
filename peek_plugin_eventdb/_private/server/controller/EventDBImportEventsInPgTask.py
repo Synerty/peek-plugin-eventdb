@@ -89,7 +89,7 @@ class EventDBImportEventsInPgTask:
         plan = plpy.prepare('''INSERT INTO pl_eventdb."EventDBEvent"
                                 ("dateTime", "key", "modelSetId", value)
                                 VALUES ($1, $2, $3, $4);''',
-                            ["timestamp", "text", "integer", "jsonb"])
+                            ["timestamp with time zone", "text", "integer", "jsonb"])
         for event in events:
             plpy.execute(plan, [event.dateTime, event.key, modelSetId, event.value])
 
