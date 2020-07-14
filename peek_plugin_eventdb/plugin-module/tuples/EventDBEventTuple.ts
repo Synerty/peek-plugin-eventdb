@@ -12,6 +12,9 @@ export class EventDBEventTuple extends Tuple {
     //  The unique id of this event / alarm
     key: string;
 
+    //  Is this alarm/event an alarm
+    isAlarm: boolean;
+
     //  A json object storing the alarm / event data
     value: any;
 

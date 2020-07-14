@@ -1,19 +1,19 @@
 import logging
-from collections import namedtuple
 from datetime import datetime
-from typing import Dict
 
-from peek_plugin_base.storage.DbConnection import DbSessionCreator
-from peek_plugin_base.storage.RunPyInPg import runPyInPg
-from peek_plugin_eventdb.tuples import loadPublicTuples
-from peek_plugin_eventdb.tuples.EventDBEventTuple import EventDBEventTuple
 from twisted.internet.defer import Deferred, inlineCallbacks
 from vortex.Payload import Payload
 from vortex.SerialiseUtil import ISO8601
 from vortex.TupleSelector import TupleSelector
 from vortex.handler.TupleDataObservableHandler import TuplesProviderABC
 
+from peek_plugin_base.storage.DbConnection import DbSessionCreator
+from peek_plugin_base.storage.RunPyInPg import runPyInPg
+from peek_plugin_eventdb.tuples import loadPublicTuples
+from peek_plugin_eventdb.tuples.EventDBEventTuple import EventDBEventTuple
+
 logger = logging.getLogger(__name__)
+
 
 class EventDBEventTupleProvider(TuplesProviderABC):
     def __init__(self, dbSessionCreator: DbSessionCreator):
@@ -52,7 +52,6 @@ class EventDBEventTupleProvider(TuplesProviderABC):
         vortexMsg = payloadEnvelope.toVortexMsg()
         return vortexMsg.decode()
 
-
     @classmethod
     def loadTuples(cls, plpy, tupleSelector: TupleSelector):
 
@@ -62,6 +61,7 @@ class EventDBEventTupleProvider(TuplesProviderABC):
         multiCriterias = selector.get('multiCriterias', {})
         newestDateTime = selector.get('newestDateTime')
         oldestDateTime = selector.get('oldestDateTime')
+        alarmsOnly = selector.get('alarmsOnly')
 
         if not modelSetKey:
             raise Exception("modelSetKey is None")
@@ -69,7 +69,8 @@ class EventDBEventTupleProvider(TuplesProviderABC):
         modelSetId = cls.getModelSetId(plpy, modelSetKey)
 
         sql = cls._makeSql(singleCriterias, multiCriterias,
-                           modelSetId, newestDateTime, oldestDateTime)
+                           modelSetId, newestDateTime, oldestDateTime,
+                           alarmsOnly=alarmsOnly)
 
         # TODO, We probably need some pagination.
 
@@ -112,7 +113,7 @@ class EventDBEventTupleProvider(TuplesProviderABC):
     @classmethod
     def _makeSql(cls, singleCriterias,
                  multiCriterias,
-                 modelSetId, newestDateTime, oldestDateTime):
+                 modelSetId, newestDateTime, oldestDateTime, alarmsOnly):
         # Create the basic SQL
         sql = """
             SELECT "dateTime", key, value

@@ -31,11 +31,13 @@ export abstract class EventDBService {
      * @param modelSetKey: The key of the model set to load data from.
      * @param dateTimeRange: The dateTime window to load events from.
      * @param criteria: Additional criteria to filter out events.
+     * @param alarmsOnly: Show only the alarms.
      */
     abstract eventTuples(
         modelSetKey: string,
         dateTimeRange: EventDateTimeRangeI,
-        criteria: EventDBPropertyCriteriaTuple[]): Observable<EventDBEventTuple[]> ;
+        criteria: EventDBPropertyCriteriaTuple[],
+        alarmsOnly: boolean): Observable<EventDBEventTuple[]> ;
 
     /** Event Tuples Selector
      *
@@ -48,11 +50,13 @@ export abstract class EventDBService {
      * @param modelSetKey: The key of the model set to load data from.
      * @param dateTimeRange: The dateTime window to load events from.
      * @param criteria: Additional criteria to filter out events.
+     * @param alarmsOnly: Show only the alarms.
      */
     abstract eventTupleSelector(
         modelSetKey: string,
         dateTimeRange: EventDateTimeRangeI,
-        criteria: EventDBPropertyCriteriaTuple[]): TupleSelector ;
+        criteria: EventDBPropertyCriteriaTuple[],
+        alarmsOnly: boolean): TupleSelector ;
 }
 
 

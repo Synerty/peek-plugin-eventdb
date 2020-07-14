@@ -76,13 +76,15 @@ export class PrivateEventDBService extends ComponentLifecycleEventEmitter
 
     eventTuples(modelSetKey: string,
                 dateTimeRange: EventDateTimeRangeI | null = null,
-                criteria: EventDBPropertyCriteriaTuple[] = []): Observable<EventDBEventTuple[]> {
+                criteria: EventDBPropertyCriteriaTuple[] = [],
+                alarmsOnly: boolean = false): Observable<EventDBEventTuple[]> {
         if (modelSetKey == null || modelSetKey.length === 0) {
             throw new Error("eventTuples: modelSetKey argument is null" +
                 " or an empty string");
         }
 
-        const ts = this.eventTupleSelector(modelSetKey, dateTimeRange, criteria);
+        const ts = this
+            .eventTupleSelector(modelSetKey, dateTimeRange, criteria, alarmsOnly);
 
         const observable: Observable<EventDBEventTuple[]> =
             <Observable<EventDBEventTuple[]>>this.tupleService
@@ -108,7 +110,8 @@ export class PrivateEventDBService extends ComponentLifecycleEventEmitter
 
     eventTupleSelector(modelSetKey: string,
                        dateTimeRange: EventDateTimeRangeI | null = null,
-                       criteria: EventDBPropertyCriteriaTuple[] = []): TupleSelector {
+                       criteria: EventDBPropertyCriteriaTuple[] = [],
+                       alarmsOnly: boolean = false): TupleSelector {
         const P = EventDBPropertyShowFilterAsEnum;
 
         const singleCriterias = {};
@@ -131,6 +134,7 @@ export class PrivateEventDBService extends ComponentLifecycleEventEmitter
 
         return new TupleSelector(EventDBEventTuple.tupleName, {
             modelSetKey: modelSetKey,
+            alarmsOnly: alarmsOnly,
             newestDateTime: dateTimeRange != null ? dateTimeRange.newestDateTime : null,
             oldestDateTime: dateTimeRange != null ? dateTimeRange.oldestDateTime : null,
             singleCriterias: singleCriterias,
