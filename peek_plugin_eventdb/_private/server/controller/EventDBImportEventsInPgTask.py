@@ -2,12 +2,13 @@ import logging
 from datetime import datetime
 from typing import Optional, List, Tuple
 
-from peek_plugin_eventdb._private.storage.EventDBModelSetTable import EventDBModelSetTable
-from peek_plugin_eventdb.tuples import loadPublicTuples
-from peek_plugin_eventdb.tuples.EventDBEventTuple import EventDBEventTuple
 from sqlalchemy.dialects import postgresql
 from vortex.Payload import Payload
 from vortex.Tuple import TUPLE_TYPES_BY_NAME
+
+from peek_plugin_eventdb._private.storage.EventDBModelSetTable import EventDBModelSetTable
+from peek_plugin_eventdb.tuples import loadPublicTuples
+from peek_plugin_eventdb.tuples.EventDBEventTuple import EventDBEventTuple
 
 logger = logging.getLogger(__name__)
 
@@ -87,11 +88,15 @@ class EventDBImportEventsInPgTask:
             cls._deleteEvents(plpy, modelSetId, keys)
 
         plan = plpy.prepare('''INSERT INTO pl_eventdb."EventDBEvent"
-                                ("dateTime", "key", "modelSetId", value)
-                                VALUES ($1, $2, $3, $4);''',
-                            ["timestamp with time zone", "text", "integer", "jsonb"])
+                                ("dateTime", "key", "isAlarm",
+                                        "modelSetId", value)
+                                VALUES ($1, $2, $3,
+                                        $4, $5);''',
+                            ["timestamp with time zone", "text", "boolean",
+                             "integer", "jsonb"])
         for event in events:
-            plpy.execute(plan, [event.dateTime, event.key, modelSetId, event.value])
+            plpy.execute(plan, [event.dateTime, event.key, event.isAlarm,
+                                modelSetId, event.value])
 
     @classmethod
     def _deleteEvents(cls, plpy, modelSetId: int, eventKeys: List[str]):

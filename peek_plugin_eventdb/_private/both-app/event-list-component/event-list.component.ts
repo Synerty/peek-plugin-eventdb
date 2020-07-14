@@ -3,7 +3,7 @@ import {PrivateEventDBService} from "@peek/peek_plugin_eventdb/_private/PrivateE
 import {EventDBEventTuple, EventDBPropertyTuple} from "@peek/peek_plugin_eventdb/tuples";
 import {DocDbPopupService, DocDbPopupTypeE} from "@peek/peek_plugin_docdb";
 import {eventdbPluginName} from "@peek/peek_plugin_eventdb/_private/PluginNames";
-import {ComponentLifecycleEventEmitter, jsonOrderedStringify} from "@synerty/vortexjs";
+import {ComponentLifecycleEventEmitter} from "@synerty/vortexjs";
 import {FilterI} from "../event-filter-component/event-filter.component";
 import {ColumnI} from "../event-column-component/event-column.component";
 
@@ -21,7 +21,7 @@ export class EventDBEventListComponent extends ComponentLifecycleEventEmitter
     modelSetKey: string;
 
     private lastSubscription = null;
-    private lastLoadFingerprint: string = '';
+    private lastLoadFingerprint: string = "";
 
     colorsEnabled: boolean = false;
 
@@ -57,7 +57,7 @@ export class EventDBEventListComponent extends ComponentLifecycleEventEmitter
         const lastLoadFingerprint =
             this.eventService
                 .eventTupleSelector(filter.modelSetKey,
-                    filter.dateTimeRange, filter.criteria)
+                    filter.dateTimeRange, filter.criteria, filter.alarmsOnly)
                 .toOrderedJsonStr();
 
         // If we have an active subscription and the fingerprint matches, do nothing

@@ -14,6 +14,7 @@ import * as moment from "moment";
 
 export interface FilterI {
     modelSetKey: string;
+    alarmsOnly: boolean;
     dateTimeRange: EventDateTimeRangeI;
     criteria: EventDBPropertyCriteriaTuple[];
 }
@@ -21,6 +22,7 @@ export interface FilterI {
 
 export interface RouteFilterI {
     live: boolean;
+    alarmsOnly: boolean;
     "cri": { [key: string]: string | string[] },
     "from": string;
     "to": string;
@@ -57,6 +59,7 @@ export class EventDBFilterComponent extends ComponentLifecycleEventEmitter
     private selectedCriterias: EventDBPropertyCriteriaTuple[] = [];
     private liveUpdateTimer: any;
     liveEnabled: boolean = true;
+    alarmsOnlyEnabled: boolean = false;
 
     private lastFilter: FilterI;
     private lastRouteParams: RouteFilterI | null = null;
@@ -125,6 +128,7 @@ export class EventDBFilterComponent extends ComponentLifecycleEventEmitter
 
         return {
             live: this.liveEnabled,
+            alarmsOnly: this.alarmsOnlyEnabled,
             cri: cri,
             from: dateToStr(this.dateTimeRange.oldestDateTime),
             to: dateToStr(this.dateTimeRange.newestDateTime)
@@ -180,6 +184,9 @@ export class EventDBFilterComponent extends ComponentLifecycleEventEmitter
         // Set the livedb value, null or true is true (default to true)
         this.liveEnabled = this.lastRouteParams.live !== false;
 
+        // Set the livedb value, null or true is true (default to true)
+        this.alarmsOnlyEnabled = this.lastRouteParams.alarmsOnly !== false;
+
         // Clear the route data
         this.lastRouteParams = null;
 
@@ -222,6 +229,11 @@ export class EventDBFilterComponent extends ComponentLifecycleEventEmitter
             this.updateFilter();
         }
 
+    }
+
+    updateAlarmsOnly(alarmsOnlyEnabled: boolean): void {
+        this.alarmsOnlyEnabled = alarmsOnlyEnabled;
+        this.updateFilter();
     }
 
     criteria(prop: EventDBPropertyTuple): EventDBPropertyCriteriaTuple {
@@ -279,6 +291,7 @@ export class EventDBFilterComponent extends ComponentLifecycleEventEmitter
     private updateFilter() {
         this.lastFilter = {
             modelSetKey: this.modelSetKey,
+            alarmsOnly: this.alarmsOnlyEnabled,
             dateTimeRange: this.dateTimeRange,
             criteria: this.selectedCriterias,
         };
