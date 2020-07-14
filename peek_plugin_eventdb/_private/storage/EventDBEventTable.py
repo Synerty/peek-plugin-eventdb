@@ -1,6 +1,6 @@
 import logging
 
-from sqlalchemy import Column, DateTime, BigInteger, String, Integer
+from sqlalchemy import Column, DateTime, BigInteger, String, Integer, Boolean
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.sql.schema import Index, ForeignKey
 from vortex.Tuple import Tuple, addTupleType
@@ -23,6 +23,8 @@ class EventDBEventTable(Tuple, DeclarativeBase):
     value = Column(JSONB, nullable=False)
 
     key = Column(String)
+
+    isAlarm = Column(Boolean)
 
     modelSetId = Column(Integer,
                         ForeignKey('EventDBModelSet.id', ondelete='CASCADE'),

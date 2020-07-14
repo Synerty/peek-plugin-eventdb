@@ -15,10 +15,11 @@ class EventDBEventTuple(Tuple):
 
     """
     __tupleType__ = eventdbTuplePrefix + 'EventDBEventTuple'
-    __slots__ = ("dateTime", "key", "value")
+    __slots__ = ("dateTime", "key", "isAlarm", "value")
 
     @classmethod
     def sqlCoreLoad(cls, row):
         return EventDBEventTuple(datetime=row.datetime,
                                  key=row.key,
+                                 isAlarm=row.isAlarm,
                                  value=row.value)

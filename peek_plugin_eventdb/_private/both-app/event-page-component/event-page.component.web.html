@@ -35,6 +35,14 @@
                        nzUnCheckedChildren="Colors"></nz-switch>
         </div>
 
+        <!-- Alarms Only Switch -->
+        <div nz-col nzSm="2">
+            <nz-switch [ngModel]="eventFilter.alarmsOnlyEnabled"
+                       (ngModelChange)="eventFilter.updateAlarmsOnly($event);updateRoute()"
+                       nzCheckedChildren="Alarms Only"
+                       nzUnCheckedChildren="Alarms Only"></nz-switch>
+        </div>
+
         <!-- Live Switch -->
         <div nz-col nzSm="2">
             <nz-switch [ngModel]="eventFilter.liveEnabled"
