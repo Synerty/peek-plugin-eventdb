@@ -121,6 +121,10 @@ class EventDBEventTupleProvider(TuplesProviderABC):
             WHERE "modelSetId" = %s
             """ % modelSetId
 
+        # Add the Alarms Only
+        if alarmsOnly:
+            sql += """     AND "isAlarm" = true \n"""
+
         # Add in the date time criteria
         if newestDateTime:
             sql += """     AND "dateTime" <= timestamp with time zone '%s' \n""" \
