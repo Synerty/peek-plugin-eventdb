@@ -3,6 +3,10 @@ from datetime import datetime
 from typing import List
 
 import pytz
+from twisted.internet.defer import Deferred, inlineCallbacks
+from vortex.TupleSelector import TupleSelector
+from vortex.handler.TupleDataObservableHandler import TupleDataObservableHandler
+
 from peek_plugin_base.storage.DbConnection import DbSessionCreator
 from peek_plugin_base.storage.RunPyInPg import runPyInPg
 from peek_plugin_eventdb._private.server.EventDBReadApi import EventDBReadApi
@@ -16,9 +20,6 @@ from peek_plugin_eventdb._private.server.tuple_selector_mappers.NewEventTSUpdate
     NewEventsTupleSelector
 from peek_plugin_eventdb._private.storage.EventDBPropertyTable import EventDBPropertyTable
 from peek_plugin_eventdb.tuples.EventDBPropertyTuple import EventDBPropertyTuple
-from twisted.internet.defer import Deferred, inlineCallbacks
-from vortex.TupleSelector import TupleSelector
-from vortex.handler.TupleDataObservableHandler import TupleDataObservableHandler
 
 logger = logging.getLogger(__name__)
 
@@ -70,6 +71,21 @@ class EventDBImportController:
                                 eventKeys)
 
         self._statusController.status.removedEvents += count
+        self._statusController.status.lastActivity = datetime.now(pytz.utc)
+        self._statusController.notify()
+
+    @inlineCallbacks
+    def updateAlarmFlags(self, modelSetKey: str, eventKeys: List[str],
+                         alarmFlag: bool) -> Deferred:
+        count = yield runPyInPg(logger,
+                                self._dbSessionCreator,
+                                EventDBImportEventsInPgTask.updateAlarmFlags,
+                                None,
+                                modelSetKey,
+                                eventKeys,
+                                alarmFlag)
+
+        self._statusController.status.updatedAlarmFlags += count
         self._statusController.status.lastActivity = datetime.now(pytz.utc)
         self._statusController.notify()
 
