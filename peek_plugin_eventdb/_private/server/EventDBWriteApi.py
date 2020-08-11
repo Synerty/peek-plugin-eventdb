@@ -1,13 +1,14 @@
 import logging
 from typing import List
 
+from twisted.internet.defer import Deferred, inlineCallbacks
+
 from peek_plugin_eventdb._private.server.EventDBReadApi import EventDBReadApi
 from peek_plugin_eventdb._private.server.controller.EventDBController import \
     EventDBController
 from peek_plugin_eventdb._private.server.controller.EventDBImportController import \
     EventDBImportController
 from peek_plugin_eventdb.server.EventDBWriteApiABC import EventDBWriteApiABC
-from twisted.internet.defer import Deferred, inlineCallbacks
 
 logger = logging.getLogger(__name__)
 
@@ -50,6 +51,15 @@ class EventDBWriteApi(EventDBWriteApiABC):
             return
 
         yield self._eventdbImportController.deleteEvents(modelSetKey, eventKeys)
+
+    @inlineCallbacks
+    def updateAlarmFlags(self, modelSetKey: str, eventKeys: List[str],
+                         alarmFlag: bool) -> Deferred:
+        if not eventKeys:
+            return
+
+        yield self._eventdbImportController.updateAlarmFlags(modelSetKey,
+                                                             eventKeys, alarmFlag)
 
     @inlineCallbacks
     def replaceProperties(self, modelSetKey: str,

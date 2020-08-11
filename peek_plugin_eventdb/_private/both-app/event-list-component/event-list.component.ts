@@ -76,7 +76,8 @@ export class EventDBEventListComponent extends ComponentLifecycleEventEmitter
         this.unsubUpdates();
 
         this.lastSubscription = this.eventService
-            .eventTuples(filter.modelSetKey, filter.dateTimeRange, filter.criteria)
+            .eventTuples(filter.modelSetKey, filter.dateTimeRange,
+                filter.criteria, filter.alarmsOnly)
             .subscribe((events: EventDBEventTuple[]) => {
                 this.events = events;
                 this.isDataLoading = false;

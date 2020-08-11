@@ -36,6 +36,22 @@ class EventDBWriteApiABC(metaclass=ABCMeta):
         """
 
     @abstractmethod
+    def updateAlarmFlags(self, modelSetKey: str, eventKeys: List[str],
+                        alarmFlag: bool) -> Deferred:
+        """ Update Alarm Flag
+
+        Change the value of the alarm flag for alarms.
+
+        :param modelSetKey:  The name of the model set for the EventDB
+        :param eventKeys: An list of event keys to update the alarm flag.
+        :param alarmFlag: The value to set the alarm flag to.
+
+        :return: A deferred that fires when the update is complete.
+        :rtype: None
+
+        """
+
+    @abstractmethod
     def replaceProperties(self, modelSetKey: str,
                           propertiesEncodedPayload: str) -> Deferred:
         """ Replace Properties
