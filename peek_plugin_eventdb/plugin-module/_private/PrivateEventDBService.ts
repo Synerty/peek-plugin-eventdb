@@ -77,7 +77,7 @@ export class PrivateEventDBService extends ComponentLifecycleEventEmitter
     eventTuples(modelSetKey: string,
                 dateTimeRange: EventDateTimeRangeI | null = null,
                 criteria: EventDBPropertyCriteriaTuple[] = [],
-                alarmsOnly: boolean = false): Observable<EventDBEventTuple[]> {
+                alarmsOnly: boolean): Observable<EventDBEventTuple[]> {
         if (modelSetKey == null || modelSetKey.length === 0) {
             throw new Error("eventTuples: modelSetKey argument is null" +
                 " or an empty string");
@@ -111,7 +111,7 @@ export class PrivateEventDBService extends ComponentLifecycleEventEmitter
     eventTupleSelector(modelSetKey: string,
                        dateTimeRange: EventDateTimeRangeI | null = null,
                        criteria: EventDBPropertyCriteriaTuple[] = [],
-                       alarmsOnly: boolean = false): TupleSelector {
+                       alarmsOnly: boolean): TupleSelector {
         const P = EventDBPropertyShowFilterAsEnum;
 
         const singleCriterias = {};

@@ -56,8 +56,25 @@ class EventDBImportEventsInPgTask:
             plpy.debug("ModelSet with key %s doesn't exist" % modelSetKey)
             return 0
 
-        # Now insert the events
+        # Now delete the events
         cls._deleteEvents(plpy, modelSetId, eventKeys)
+
+        return len(eventKeys)
+
+    @classmethod
+    def updateAlarmFlags(cls, plpy,
+                         modelSetKey: str,
+                         eventKeys: List[str],
+                         alarmFlag: bool) -> int:
+
+        # Get the model set id
+        modelSetId = cls.getModelSetId(plpy, modelSetKey, createIfMissing=False)
+        if modelSetId is None:
+            plpy.debug("ModelSet with key %s doesn't exist" % modelSetKey)
+            return 0
+
+        # Now insert the events
+        cls._updateAlarmFlags(plpy, modelSetId, eventKeys, alarmFlag)
 
         return len(eventKeys)
 
@@ -104,4 +121,18 @@ class EventDBImportEventsInPgTask:
                  WHERE key in (%s)
                     AND "modelSetId" = %s;'''
         sql %= (', '.join("'%s'" % k for k in eventKeys), modelSetId)
+        plpy.execute(sql)
+
+    @classmethod
+    def _updateAlarmFlags(cls, plpy, modelSetId: int, eventKeys: List[str],
+                          alarmFlag: bool):
+        sql = '''UPDATE pl_eventdb."EventDBEvent"
+                 SET "isAlarm" = %(isAlarm)s
+                 WHERE key in (%(keys)s)
+                    AND "modelSetId" = %(modelSetId)s;'''
+        sql %= dict(
+            modelSetId=modelSetId,
+            keys=', '.join("'%s'" % k for k in eventKeys),
+            isAlarm=str(alarmFlag).lower()
+        )
         plpy.execute(sql)
