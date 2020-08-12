@@ -8,6 +8,7 @@ export class AdminStatusTuple extends Tuple {
 
     addedEvents: number;
     removedEvents: number;
+    updatedAlarmFlags: boolean;
     lastActivity: Date;
 
     constructor() {
