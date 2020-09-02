@@ -11,4 +11,5 @@ class AdminStatusTuple(Tuple):
 
     addedEvents: int = TupleField(0)
     removedEvents: int = TupleField(0)
+    updatedAlarmFlags: int = TupleField(0)
     lastActivity: datetime = TupleField()

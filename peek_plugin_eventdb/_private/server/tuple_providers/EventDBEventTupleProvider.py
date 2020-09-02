@@ -29,7 +29,7 @@ class EventDBEventTupleProvider(TuplesProviderABC):
         #
         # sql = self._makeSql(criterias, 0, newestDateTime, oldestDateTime)
         # logger.info(sql)
-
+        logger.debug(tupleSelector.toJsonStr())
         return (yield runPyInPg(logger,
                                 self._dbSessionCreator,
                                 self._loadInPg,

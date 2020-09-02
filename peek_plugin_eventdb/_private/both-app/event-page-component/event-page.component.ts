@@ -78,7 +78,9 @@ export class EventDBPageComponent extends ComponentLifecycleEventEmitter impleme
             return '';
 
         const tupleSelector = this.eventService
-            .eventTupleSelector(this.modelSetKey, filter.dateTimeRange, filter.criteria);
+            .eventTupleSelector(this.modelSetKey,
+                filter.dateTimeRange,filter.criteria,
+                filter.alarmsOnly);
         tupleSelector.selector["columnPropKeys"] = columnPropKeys;
 
         return "/peek_plugin_eventdb/download/events?tupleSelector="
