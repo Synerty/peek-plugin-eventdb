@@ -2,7 +2,7 @@ import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
 import {EventDBPropertyTuple} from "@peek/peek_plugin_eventdb/tuples";
 import {PrivateEventDBService} from "@peek/peek_plugin_eventdb/_private/PrivateEventDBService";
 import {ComponentLifecycleEventEmitter} from "@synerty/vortexjs";
-import {Ng2BalloonMsgService} from "@synerty/ng2-balloon-msg";
+import { BalloonMsgService } from "@synerty/peek-plugin-base-js"
 
 export interface ColumnI {
     selectedProps: EventDBPropertyTuple[];
@@ -32,7 +32,7 @@ export class EventDBColumnComponent extends ComponentLifecycleEventEmitter
 
     private lastRouteParams: string | null = null;
 
-    constructor(private balloonMsg: Ng2BalloonMsgService,
+    constructor(private balloonMsg: BalloonMsgService,
                 private eventService: PrivateEventDBService) {
 
         super();

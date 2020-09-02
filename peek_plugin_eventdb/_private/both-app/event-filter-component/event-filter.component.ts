@@ -6,8 +6,8 @@ import {
     EventDBPropertyTuple
 } from "@peek/peek_plugin_eventdb/tuples";
 import {ComponentLifecycleEventEmitter} from "@synerty/vortexjs";
-import SerialiseUtil from "@synerty/vortexjs/src/vortex/SerialiseUtil";
-import {Ng2BalloonMsgService} from "@synerty/ng2-balloon-msg";
+import {SerialiseUtil} from "@synerty/vortexjs";
+import { BalloonMsgService } from "@synerty/peek-plugin-base-js"
 import {EventDateTimeRangeI} from "@peek/peek_plugin_eventdb";
 
 import * as moment from "moment";
@@ -66,7 +66,7 @@ export class EventDBFilterComponent extends ComponentLifecycleEventEmitter
 
     FilterAsEnum = EventDBPropertyShowFilterAsEnum;
 
-    constructor(private balloonMsg: Ng2BalloonMsgService,
+    constructor(private balloonMsg: BalloonMsgService,
                 private eventService: PrivateEventDBService) {
 
         super();

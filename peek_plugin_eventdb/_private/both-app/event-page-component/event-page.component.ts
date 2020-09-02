@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, ViewChild} from "@angular/core";
 import {ComponentLifecycleEventEmitter, jsonOrderedStringify} from "@synerty/vortexjs";
-import {TitleService} from "@synerty/peek-util";
+import { TitleService } from "@synerty/peek-plugin-base-js"
 import {EventDBColumnComponent} from "../event-column-component/event-column.component";
 import {EventDBFilterComponent} from "../event-filter-component/event-filter.component";
 import {ActivatedRoute, Params, Router} from "@angular/router";
@@ -96,7 +96,7 @@ export class EventDBPageComponent extends ComponentLifecycleEventEmitter impleme
         this.routeUpdateTimer = null;
 
         let url = this.router.url.split(";")[0];
-​
+
         // Sometimes it can try to position after we've navigated away
         if (url.indexOf("peek_plugin_eventdb") == -1)
             return;
