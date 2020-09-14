@@ -5,7 +5,7 @@ import {
     EventDBPropertyShowFilterAsEnum,
     EventDBPropertyTuple
 } from "@peek/peek_plugin_eventdb/tuples";
-import {ComponentLifecycleEventEmitter} from "@synerty/vortexjs";
+import { NgLifeCycleEvents } from "@synerty/peek-plugin-base-js"
 import {SerialiseUtil} from "@synerty/vortexjs";
 import { BalloonMsgService } from "@synerty/peek-plugin-base-js"
 import {EventDateTimeRangeI} from "@peek/peek_plugin_eventdb";
@@ -36,7 +36,7 @@ export interface RouteFilterI {
         "../event-common.component.web.scss"],
     moduleId: module.id
 })
-export class EventDBFilterComponent extends ComponentLifecycleEventEmitter
+export class EventDBFilterComponent extends NgLifeCycleEvents
     implements OnInit {
 
     @Input("modelSetKey")

@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
 import {EventDBPropertyTuple} from "@peek/peek_plugin_eventdb/tuples";
 import {PrivateEventDBService} from "@peek/peek_plugin_eventdb/_private/PrivateEventDBService";
-import {ComponentLifecycleEventEmitter} from "@synerty/vortexjs";
+import { NgLifeCycleEvents } from "@synerty/peek-plugin-base-js"
 import { BalloonMsgService } from "@synerty/peek-plugin-base-js"
 
 export interface ColumnI {
@@ -14,7 +14,7 @@ export interface ColumnI {
     styleUrls: ["../event-common.component.web.scss"],
     moduleId: module.id
 })
-export class EventDBColumnComponent extends ComponentLifecycleEventEmitter
+export class EventDBColumnComponent extends NgLifeCycleEvents
     implements OnInit {
 
     @Input("modelSetKey")
