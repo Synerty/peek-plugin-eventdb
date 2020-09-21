@@ -1,14 +1,14 @@
 import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
-import {PrivateEventDBService} from "@peek/peek_plugin_eventdb/_private/PrivateEventDBService";
+import {PrivateEventDBService} from "@_peek/peek_plugin_eventdb/_private/PrivateEventDBService";
 import {
     EventDBPropertyCriteriaTuple,
     EventDBPropertyShowFilterAsEnum,
     EventDBPropertyTuple
-} from "@peek/peek_plugin_eventdb/tuples";
+} from "@_peek/peek_plugin_eventdb/tuples";
 import { NgLifeCycleEvents } from "@synerty/peek-plugin-base-js"
 import {SerialiseUtil} from "@synerty/vortexjs";
 import { BalloonMsgService } from "@synerty/peek-plugin-base-js"
-import {EventDateTimeRangeI} from "@peek/peek_plugin_eventdb";
+import {EventDateTimeRangeI} from "@_peek/peek_plugin_eventdb";
 
 import * as moment from "moment";
 
