@@ -5,7 +5,7 @@ import { EventDBColumnComponent } from "../event-column-component/event-column.c
 import { EventDBFilterComponent } from "../event-filter-component/event-filter.component"
 import { ActivatedRoute, Params, Router } from "@angular/router"
 import { EventDBEventListComponent } from "../event-list-component/event-list.component"
-import { PrivateEventDBService } from "@_peek/peek_plugin_eventdb/_private/PrivateEventDBService"
+import { PrivateEventDBService } from "@peek/peek_plugin_eventdb/_private/PrivateEventDBService"
 
 @Component({
     selector: "plugin-eventdb-event-page",
