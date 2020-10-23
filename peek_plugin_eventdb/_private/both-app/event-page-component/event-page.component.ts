@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ViewChild } from "@angular/core"
 import { jsonOrderedStringify } from "@synerty/vortexjs"
-import { NgLifeCycleEvents, TitleService } from "@synerty/peek-plugin-base-js"
+import { NgLifeCycleEvents, HeaderService } from "@synerty/peek-plugin-base-js"
 import { EventDBColumnComponent } from "../event-column-component/event-column.component"
 import { EventDBFilterComponent } from "../event-filter-component/event-filter.component"
 import { ActivatedRoute, Params, Router } from "@angular/router"
@@ -29,14 +29,14 @@ export class EventDBPageComponent extends NgLifeCycleEvents implements AfterView
     private routeUpdateTimer: any | null = null
     
     constructor(
-        private titleService: TitleService,
+        private headerService: HeaderService,
         private route: ActivatedRoute,
         private router: Router,
         private eventService: PrivateEventDBService
     ) {
         super()
         
-        titleService.setTitle("Alarm and Events")
+        headerService.setTitle("Alarm and Events")
     }
     
     get downloadUrl(): string {
