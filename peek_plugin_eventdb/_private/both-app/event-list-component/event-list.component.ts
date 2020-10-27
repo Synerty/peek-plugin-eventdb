@@ -10,8 +10,7 @@ import { ColumnI } from "../event-column-component/event-column.component"
 @Component({
     selector: "plugin-eventdb-event-list",
     templateUrl: "event-list.component.web.html",
-    styleUrls: ["../event-common.component.web.scss"],
-    moduleId: module.id
+    styleUrls: ["../event-common.component.web.scss"]
 })
 export class EventDBEventListComponent extends NgLifeCycleEvents
     implements OnInit {

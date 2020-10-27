@@ -11,8 +11,7 @@ export interface ColumnI {
 @Component({
     selector: "plugin-eventdb-event-column",
     templateUrl: "event-column.component.web.html",
-    styleUrls: ["../event-common.component.web.scss"],
-    moduleId: module.id
+    styleUrls: ["../event-common.component.web.scss"]
 })
 export class EventDBColumnComponent extends NgLifeCycleEvents
     implements OnInit {

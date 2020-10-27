@@ -10,9 +10,7 @@ import { PrivateEventDBService } from "@peek/peek_plugin_eventdb/_private/Privat
 @Component({
     selector: "plugin-eventdb-event-page",
     templateUrl: "event-page.component.web.html",
-    styleUrls: ["../event-common.component.web.scss"],
-    
-    moduleId: module.id
+    styleUrls: ["../event-common.component.web.scss"]
 })
 export class EventDBPageComponent extends NgLifeCycleEvents implements AfterViewInit {
     @ViewChild("eventFilter", {static: true})

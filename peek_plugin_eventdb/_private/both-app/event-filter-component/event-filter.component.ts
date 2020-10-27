@@ -33,8 +33,7 @@ export interface RouteFilterI {
     selector: "plugin-eventdb-event-filter",
     templateUrl: "event-filter.component.web.html",
     styleUrls: ["event-filter.component.web.scss",
-        "../event-common.component.web.scss"],
-    moduleId: module.id
+        "../event-common.component.web.scss"]
 })
 export class EventDBFilterComponent extends NgLifeCycleEvents
     implements OnInit {
