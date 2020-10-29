@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from "@angular/core"
 import { PrivateEventDBService } from "@peek/peek_plugin_eventdb/_private/PrivateEventDBService"
 import { EventDBEventTuple, EventDBPropertyTuple } from "@peek/peek_plugin_eventdb/tuples"
-import { DocDbPopupService, DocDbPopupTypeE } from "@peek/peek_plugin_docdb"
+import { DocDbPopupService, DocDbPopupTypeE } from "@peek/peek_core_docdb"
 import { eventdbPluginName } from "@peek/peek_plugin_eventdb/_private/PluginNames"
 import { NgLifeCycleEvents } from "@synerty/peek-plugin-base-js"
 import { FilterI } from "../event-filter-component/event-filter.component"
