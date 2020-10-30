@@ -9,7 +9,6 @@
         "website": "www.synerty.com"
     },
     "requiresServices": [
-        "client",
         "server",
         "storage",
         "admin",
@@ -17,8 +16,8 @@
         "doc-dev",
         "doc-admin",
         "client",
-        "mobile",
-        "desktop",
+        "field",
+        "office",
         "doc-user"
     ],
     "doc-dev": {
@@ -36,8 +35,7 @@
     },
     "server": {
     },
-    "client": {
-    },
+
     "storage": {
         "alembicDir": "_private/alembic"
     },
@@ -48,7 +46,7 @@
     },
     "agent": {
     },
-    "mobile": {
+    "field": {
         "homeLinkText": "Alarms / Events",
         "showHomeLink": true,
         "appDir": "_private/both-app",
@@ -73,7 +71,7 @@
             }
         ]
     },
-    "desktop": {
+    "office": {
         "homeLinkText": "Alarms / Events",
         "showHomeLink": true,
         "appDir": "_private/both-app",
