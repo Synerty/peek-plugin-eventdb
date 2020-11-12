@@ -14,10 +14,10 @@
         </th>
     </tr>
     </thead>
-    <tbody *ngFor="let event of eventsTable.data"
-           (mouseenter)="tooltipEnter($event, event)"
-           (mouseleave)="tooltipExit($event, event)"
-           (click)="showSummaryPopup($event, event)">
+    <tbody
+      (click)="showSummaryPopup($event, event)"
+      *ngFor="let event of eventsTable.data"
+    >
     <tr [ngStyle]="{'background-color': colorValue(event)}">
         <td style="white-space: normal">
             <span
