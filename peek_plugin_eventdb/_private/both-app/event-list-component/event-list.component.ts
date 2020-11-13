@@ -118,31 +118,6 @@ export class EventDBEventListComponent extends NgLifeCycleEvents
         return color
     }
     
-    tooltipEnter(
-        $event: MouseEvent,
-        result: EventDBEventTuple
-    ) {
-        const docdbPopupKey = this.getDocDBPopupKey(result)
-        if (docdbPopupKey == null)
-            return
-        
-        // const offset = $(".scroll-container").offset();
-        this.objectPopupService
-            .showPopup(
-                DocDbPopupTypeE.tooltipPopup,
-                eventdbPluginName,
-                $event,
-                this.modelSetKey,
-                docdbPopupKey)
-    }
-    
-    tooltipExit(
-        $event: MouseEvent,
-        result: EventDBEventTuple
-    ) {
-        this.objectPopupService.hidePopup(DocDbPopupTypeE.tooltipPopup)
-    }
-    
     showSummaryPopup(
         $event: MouseEvent,
         result: EventDBEventTuple
@@ -154,11 +129,13 @@ export class EventDBEventListComponent extends NgLifeCycleEvents
         this.objectPopupService.hidePopup(DocDbPopupTypeE.tooltipPopup)
         this.objectPopupService
             .showPopup(
+                true,
                 DocDbPopupTypeE.summaryPopup,
                 eventdbPluginName,
                 $event,
                 this.modelSetKey,
-                docdbPopupKey)
+                docdbPopupKey
+            )
     }
     
     private unsubUpdates() {
