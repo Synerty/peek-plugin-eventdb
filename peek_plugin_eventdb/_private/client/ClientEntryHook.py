@@ -60,7 +60,7 @@ class ClientEntryHook(PluginClientEntryHookABC):
 
         # Matches resource path on server
         # noinspection PyTypeChecker
-        self.platform.addDesktopResource(b'download', proxyResource)
+        self.platform.addOfficeResource(b'download', proxyResource)
 
         logger.debug("Started")
 

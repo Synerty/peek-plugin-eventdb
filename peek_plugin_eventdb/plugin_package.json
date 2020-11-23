@@ -9,7 +9,7 @@
         "website": "www.synerty.com"
     },
     "requiresServices": [
-        "server",
+        "logic",
         "storage",
         "admin",
         "agent",
@@ -33,7 +33,7 @@
         "docDir": "doc-user",
         "docRst": "index.rst"
     },
-    "server": {
+    "logic": {
     },
 
     "storage": {
