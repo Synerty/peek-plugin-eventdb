@@ -13,24 +13,24 @@
         "storage",
         "admin",
         "agent",
-        "doc-dev",
-        "doc-admin",
         "client",
         "field",
         "office",
-        "doc-user"
+        "admin-doc",
+        "office-doc",
+        "field-doc"
     ],
-    "doc-dev": {
-        "docDir": "doc-dev",
+    "admin-doc": {
+        "docDir": "admin-doc",
         "docRst": "index.rst",
         "hasApi": true
     },
-    "doc-admin": {
-        "docDir": "doc-admin",
+    "office-doc": {
+        "docDir": "both-doc",
         "docRst": "index.rst"
     },
-    "doc-user": {
-        "docDir": "doc-user",
+    "field-doc": {
+        "docDir": "both-doc",
         "docRst": "index.rst"
     },
     "logic": {
