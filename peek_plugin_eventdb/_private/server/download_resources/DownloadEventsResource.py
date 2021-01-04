@@ -9,8 +9,9 @@ from vortex.TupleSelector import TupleSelector
 
 from peek_plugin_base.storage.DbConnection import DbSessionCreator
 from peek_plugin_base.storage.RunPyInPg import runPyInPg
-from peek_plugin_eventdb._private.server.tuple_providers.EventDBEventTupleProvider import \
-    EventDBEventTupleProvider
+from peek_plugin_eventdb._private.server.tuple_providers.EventDBEventTupleProvider import (
+    EventDBEventTupleProvider,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -27,12 +28,13 @@ class DownloadEventsResource(BasicResource):
         self._dbSessionCreator = dbSessionCreator
 
     def render_GET(self, request):
-        tupleSelectorStr = request.args[b'tupleSelector'][0].decode()
+        tupleSelectorStr = request.args[b"tupleSelector"][0].decode()
 
-        request.responseHeaders.setRawHeaders('content-type', ['text/csv'])
+        request.responseHeaders.setRawHeaders("content-type", ["text/csv"])
         logger.info("Received download request for events.")
-        logger.debug("Download request received with TupleSelector = %s.",
-                     tupleSelectorStr)
+        logger.debug(
+            "Download request received with TupleSelector = %s.", tupleSelectorStr
+        )
 
         def good(data):
             request.write(data.encode())
@@ -46,11 +48,13 @@ class DownloadEventsResource(BasicResource):
 
             request.finish()
 
-        d = runPyInPg(logger,
-                      self._dbSessionCreator,
-                      self._loadInPg,
-                      EventDBEventTupleProvider._importTuples,
-                      tupleSelectorStr=tupleSelectorStr)
+        d = runPyInPg(
+            logger,
+            self._dbSessionCreator,
+            self._loadInPg,
+            EventDBEventTupleProvider._importTuples,
+            tupleSelectorStr=tupleSelectorStr,
+        )
 
         d.addCallbacks(good, bad)
 
@@ -66,41 +70,43 @@ class DownloadEventsResource(BasicResource):
         tupleSelector = TupleSelector.fromJsonStr(tupleSelectorStr)
         columnPropKeys = tupleSelector.selector["columnPropKeys"]
 
-        modelSetId = EventDBEventTupleProvider \
-            .getModelSetId(plpy, tupleSelector.selector['modelSetKey'])
+        modelSetId = EventDBEventTupleProvider.getModelSetId(
+            plpy, tupleSelector.selector["modelSetKey"]
+        )
 
         propByKey = cls._getPropertyByKey(plpy, modelSetId)
 
-        tuples = EventDBEventTupleProvider \
-            .loadTuples(plpy, tupleSelector)
+        tuples = EventDBEventTupleProvider.loadTuples(plpy, tupleSelector)
 
-        data = ''
+        data = ""
 
         # Write the heading
-        cols = ['Date', 'Time', 'Milliseconds', 'UTC Offset']
+        cols = ["Date", "Time", "Milliseconds", "UTC Offset"]
         for columnPropKey in columnPropKeys:
             cols.append('"%s"' % propByKey[columnPropKey].name)
 
-        data += ','.join(cols) + '\r\n'
+        data += ",".join(cols) + "\r\n"
 
         # Write the data of the table
         for row in tuples:
             value = json.loads(row.value)
-            tz = str(row.dateTime.strftime('%z'))
-            cols = [row.dateTime.strftime('%d-%b-%Y'),
-                    row.dateTime.strftime('%H:%M:%S'),
-                    str(int(row.dateTime.microsecond / 1000)),
-                    '%s:%s' % (tz[:-2], tz[-2:])]
+            tz = str(row.dateTime.strftime("%z"))
+            cols = [
+                row.dateTime.strftime("%d-%b-%Y"),
+                row.dateTime.strftime("%H:%M:%S"),
+                str(int(row.dateTime.microsecond / 1000)),
+                "%s:%s" % (tz[:-2], tz[-2:]),
+            ]
 
             for columnPropKey in columnPropKeys:
                 prop = propByKey[columnPropKey]
                 val = value.get(columnPropKey)
 
                 if val is None:
-                    cols.append('')
+                    cols.append("")
                 else:
                     # Map the value if it has one.
-                    valKey = str(val).replace('null', 'none').lower()
+                    valKey = str(val).replace("null", "none").lower()
                     val = prop.nameByValueMap.get(valKey, val)
 
                     if isinstance(val, int):
@@ -108,18 +114,21 @@ class DownloadEventsResource(BasicResource):
                     else:
                         cols.append('"%s"' % val)
 
-            data += ','.join(cols) + '\r\n'
+            data += ",".join(cols) + "\r\n"
 
         return data
 
     @classmethod
     def _getPropertyByKey(cls, plpy, modelSetId) -> Dict[str, _Prop]:
         # Load in the ModelSet ID
-        sql = """
+        sql = (
+            """
               SELECT id, key, name
               FROM pl_eventdb."EventDBProperty"
               where "modelSetId" = %s
-              """ % modelSetId
+              """
+            % modelSetId
+        )
         rows = plpy.execute(sql, 10000)
 
         if not len(rows):
@@ -128,23 +137,26 @@ class DownloadEventsResource(BasicResource):
         propByKey = {}
         propById = {}
         for row in rows:
-            prop = _Prop(row['name'])
-            propByKey[row['key']] = prop
-            propById[row['id']] = prop
+            prop = _Prop(row["name"])
+            propByKey[row["key"]] = prop
+            propById[row["id"]] = prop
 
         # Load in the Property Values
 
-        sql = """
+        sql = (
+            """
               SELECT v."propertyId", v.name, v.value
               FROM pl_eventdb."EventDBPropertyValue" as v
                   JOIN pl_eventdb."EventDBProperty" as p on v."propertyId"=p.id
               where "modelSetId" = %s
-              """ % modelSetId
+              """
+            % modelSetId
+        )
         rows = plpy.execute(sql, 10000)
 
         for row in rows:
-            prop = propById[row['propertyId']]
-            key = str(row['value']).replace('null', 'none').lower()
-            prop.nameByValueMap[key] = row['name']
+            prop = propById[row["propertyId"]]
+            key = str(row["value"]).replace("null", "none").lower()
+            prop.nameByValueMap[key] = row["name"]
 
         return propByKey

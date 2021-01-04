@@ -1,14 +1,13 @@
 <div class="panel panel-default">
     <div class="panel-heading"><span> </span>
         <div class="btn-toolbar pull-right">
-            <button nz-button (click)='saveClicked()'>Save</button>
-            <button nz-button (click)='resetClicked()'>Reset</button>
+            <button (click)="saveClicked()" nz-button>Save</button>
+            <button (click)="resetClicked()" nz-button>Reset</button>
         </div>
     </div>
-
-
+    
     <div class="panel-body">
-        <nz-table #propertyTable nzSize="small" [nzData]="items">
+        <nz-table #propertyTable [nzData]="items" nzSize="small">
             <thead>
             <tr>
                 <th nzShowExpand>Value Map</th>
@@ -17,53 +16,67 @@
                 <th>Name</th>
                 <th>Order</th>
                 <th>Comment</th>
-
+                
                 <th>Filter Property</th>
                 <th>Display Property</th>
                 <th>Popup Details</th>
                 <th>
-                    <button nz-button nzType="default" nzShape="circle"
-                            (click)="addClicked()">
+                    <button
+                        (click)="addClicked()" nz-button nzShape="circle"
+                        nzType="default"
+                    >
                         <i nz-icon nzType="plus"></i>
                     </button>
                 </th>
             </tr>
             </thead>
             <tbody>
-
-            <ng-container *ngFor="let item of propertyTable.data; let itemIndex=index">
+            
+            <ng-container
+                *ngFor="let item of propertyTable.data; let itemIndex=index"
+            >
                 <tr>
-                    <td nzShowExpand [(nzExpand)]="item.uiExpandValues"></td>
+                    <td [(nzExpand)]="item.uiExpandValues" nzShowExpand></td>
                     <td>
-                        <nz-badge nzColor="red" *ngIf="!item.isValid">
+                        <nz-badge *ngIf="!item.isValid" nzColor="red">
                             <nz-select [(ngModel)]="item.modelSetId">
-                                <nz-option *ngFor="let option of modelSets"
-                                           [nzValue]="option.id"
-                                           [nzLabel]="option.name"></nz-option>
+                                <nz-option
+                                    *ngFor="let option of modelSets"
+                                    [nzLabel]="option.name"
+                                    [nzValue]="option.id"
+                                ></nz-option>
                             </nz-select>
                         </nz-badge>
                     </td>
                     <td>
-                        <input nz-input
-                               placeholder="exampleKey"
-                               [(ngModel)]="item.key"/>
+                        <input
+                            [(ngModel)]="item.key"
+                            nz-input
+                            placeholder="exampleKey"
+                        />
                     </td>
                     <td>
-                        <input nz-input
-                               placeholder="Example Key"
-                               [(ngModel)]="item.name"/>
+                        <input
+                            [(ngModel)]="item.name"
+                            nz-input
+                            placeholder="Example Key"
+                        />
                     </td>
                     <td>
-                        <nz-input-number [(ngModel)]="item.order" [nzMin]="1"
-                                         [nzMax]="100"
-                                         [nzStep]="1"></nz-input-number>
+                        <nz-input-number
+                            [(ngModel)]="item.order" [nzMax]="100"
+                            [nzMin]="1"
+                            [nzStep]="1"
+                        ></nz-input-number>
                     </td>
                     <td>
-                        <input nz-input
-                               placeholder="Example Comment"
-                               [(ngModel)]="item.comment"/>
+                        <input
+                            [(ngModel)]="item.comment"
+                            nz-input
+                            placeholder="Example Comment"
+                        />
                     </td>
-
+                    
                     <td>
                         <nz-switch [(ngModel)]="item.useForFilter"></nz-switch>
                     </td>
@@ -74,8 +87,11 @@
                         <nz-switch [(ngModel)]="item.useForPopup"></nz-switch>
                     </td>
                     <td>
-                        <button nz-button nzType="default" nzShape="circle"
-                                (click)="removeClicked(itemIndex)">
+                        <button
+                            (click)="removeClicked(itemIndex)" nz-button
+                            nzShape="circle"
+                            nzType="default"
+                        >
                             <i nz-icon nzType="close"></i>
                         </button>
                     </td>
@@ -85,27 +101,34 @@
                         <span *ngIf="item.useForDisplay">
                             Show on Summary
                             <nz-switch
-                                [(ngModel)]="item.displayByDefaultOnSummaryView"></nz-switch>
+                                [(ngModel)]="item.displayByDefaultOnSummaryView"
+                            ></nz-switch>
                             Show on Detail
                             <nz-switch
-                                [(ngModel)]="item.displayByDefaultOnDetailView"></nz-switch>
+                                [(ngModel)]="item.displayByDefaultOnDetailView"
+                            ></nz-switch>
                         </span>
-
+                        
                         <span *ngIf="item.useForFilter">
                             Show filter as:
                             <nz-select [(ngModel)]="item.showFilterAs">
-                                <nz-option *ngFor="let option of showFilterAsOptions"
-                                           [nzValue]="option.num"
-                                           [nzLabel]="option.text"></nz-option>
+                                <nz-option
+                                    *ngFor="let option of showFilterAsOptions"
+                                    [nzLabel]="option.text"
+                                    [nzValue]="option.num"
+                                ></nz-option>
                             </nz-select>
                         </span>
                     </td>
-
+                
                 </tr>
                 <tr [nzExpand]="item.uiExpandValues">
                     <td colspan="9">
-                        <nz-table nzSize="small"
-                                  #propertyValueTable [nzData]="item.valuesFromAdminUi">
+                        <nz-table
+                            #propertyValueTable
+                            [nzData]="item.valuesFromAdminUi"
+                            nzSize="small"
+                        >
             <thead>
             <tr>
                 <th>Value</th>
@@ -113,8 +136,11 @@
                 <th>Color</th>
                 <th>Comment</th>
                 <th>
-                    <button nz-button nzType="default" nzShape="circle"
-                            (click)="addValueClicked(item)">
+                    <button
+                        (click)="addValueClicked(item)" nz-button
+                        nzShape="circle"
+                        nzType="default"
+                    >
                         <i nz-icon nzType="plus"></i>
                     </button>
                 </th>
@@ -122,33 +148,45 @@
             </thead>
             <tbody>
             <ng-container
-                *ngFor="let value of propertyValueTable.data; let itemValueIndex=index">
+                *ngFor="let value of propertyValueTable.data; let itemValueIndex=index"
+            >
                 <tr>
                     <td>
-                        <input nz-input
-                               placeholder="Value"
-                               [(ngModel)]="value.value"/>
+                        <input
+                            [(ngModel)]="value.value"
+                            nz-input
+                            placeholder="Value"
+                        />
                     </td>
                     <td>
-                        <input nz-input
-                               placeholder="Name"
-                               [(ngModel)]="value.name"/>
+                        <input
+                            [(ngModel)]="value.name"
+                            nz-input
+                            placeholder="Name"
+                        />
                     </td>
                     <td>
-                        <input nz-input
-                               placeholder="Color"
-                               [(ngModel)]="value.color"/>
+                        <input
+                            [(ngModel)]="value.color"
+                            nz-input
+                            placeholder="Color"
+                        />
                     </td>
                     <td>
-                        <input nz-input
-                               placeholder="Comment"
-                               [(ngModel)]="value.comment"/>
+                        <input
+                            [(ngModel)]="value.comment"
+                            nz-input
+                            placeholder="Comment"
+                        />
                     </td>
                     <td>
-
-                        <nz-badge nzColor="red" *ngIf="!value.isValid">
-                            <button nz-button nzType="default" nzShape="circle"
-                                    (click)="removeValueClicked(item, itemValueIndex)">
+                        
+                        <nz-badge *ngIf="!value.isValid" nzColor="red">
+                            <button
+                                (click)="removeValueClicked(item, itemValueIndex)"
+                                nz-button nzShape="circle"
+                                nzType="default"
+                            >
                                 <i nz-icon nzType="close"></i>
                             </button>
                         </nz-badge>

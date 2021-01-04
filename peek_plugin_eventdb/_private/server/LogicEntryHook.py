@@ -1,16 +1,21 @@
 import logging
 
 from peek_plugin_base.server.PluginLogicEntryHookABC import PluginLogicEntryHookABC
-from peek_plugin_base.server.PluginServerStorageEntryHookABC import \
-    PluginServerStorageEntryHookABC
-from peek_plugin_base.server.PluginServerWorkerEntryHookABC import \
-    PluginServerWorkerEntryHookABC
-from peek_plugin_eventdb._private.server.controller.EventDBController import \
-    EventDBController
-from peek_plugin_eventdb._private.server.controller.EventDBImportController import \
-    EventDBImportController
-from peek_plugin_eventdb._private.server.download_resources.DownloadEventsResource import \
-    DownloadEventsResource
+from peek_plugin_base.server.PluginServerStorageEntryHookABC import (
+    PluginServerStorageEntryHookABC,
+)
+from peek_plugin_base.server.PluginServerWorkerEntryHookABC import (
+    PluginServerWorkerEntryHookABC,
+)
+from peek_plugin_eventdb._private.server.controller.EventDBController import (
+    EventDBController,
+)
+from peek_plugin_eventdb._private.server.controller.EventDBImportController import (
+    EventDBImportController,
+)
+from peek_plugin_eventdb._private.server.download_resources.DownloadEventsResource import (
+    DownloadEventsResource,
+)
 from peek_plugin_eventdb._private.storage import DeclarativeBase
 from peek_plugin_eventdb._private.storage.DeclarativeBase import loadStorageTuples
 from peek_plugin_eventdb._private.tuples import loadPrivateTuples
@@ -27,8 +32,11 @@ from .controller.MainController import MainController
 logger = logging.getLogger(__name__)
 
 
-class LogicEntryHook(PluginLogicEntryHookABC, PluginServerStorageEntryHookABC,
-                      PluginServerWorkerEntryHookABC):
+class LogicEntryHook(
+    PluginLogicEntryHookABC,
+    PluginServerStorageEntryHookABC,
+    PluginServerWorkerEntryHookABC,
+):
     def __init__(self, *args, **kwargs):
         """" Constructor """
         # Call the base classes constructor
@@ -40,7 +48,7 @@ class LogicEntryHook(PluginLogicEntryHookABC, PluginServerStorageEntryHookABC,
         self._api = None
 
     def load(self) -> None:
-        """ Load
+        """Load
 
         This will be called when the plugin is loaded, just after the db is migrated.
         Place any custom initialiastion steps here.
@@ -59,7 +67,7 @@ class LogicEntryHook(PluginLogicEntryHookABC, PluginServerStorageEntryHookABC,
         return DeclarativeBase.metadata
 
     def start(self):
-        """ Start
+        """Start
 
         This will be called when the plugin is loaded, just after the db is migrated.
         Place any custom initialiastion steps here.
@@ -72,8 +80,9 @@ class LogicEntryHook(PluginLogicEntryHookABC, PluginServerStorageEntryHookABC,
 
         # ----------------
         # Create the Tuple Observer
-        tupleObservable = makeTupleDataObservableHandler(self.dbSessionCreator,
-                                                         statusController)
+        tupleObservable = makeTupleDataObservableHandler(
+            self.dbSessionCreator, statusController
+        )
         self._loadedObjects.append(tupleObservable)
 
         # ----------------
@@ -83,13 +92,14 @@ class LogicEntryHook(PluginLogicEntryHookABC, PluginServerStorageEntryHookABC,
         # ----------------
         # Initialise the handlers for the admin interface
         self._loadedObjects.extend(
-            makeAdminBackendHandlers(tupleObservable, self.dbSessionCreator))
+            makeAdminBackendHandlers(tupleObservable, self.dbSessionCreator)
+        )
 
         # ----------------
         # create the Main Controller
         mainController = MainController(
-            dbSessionCreator=self.dbSessionCreator,
-            tupleObservable=tupleObservable)
+            dbSessionCreator=self.dbSessionCreator, tupleObservable=tupleObservable
+        )
 
         self._loadedObjects.append(mainController)
 
@@ -104,17 +114,19 @@ class LogicEntryHook(PluginLogicEntryHookABC, PluginServerStorageEntryHookABC,
 
         # ----------------
         # Create the Import Controller
-        eventdbImportController = EventDBImportController(self.dbSessionCreator,
-                                                          statusController,
-                                                          tupleObservable)
+        eventdbImportController = EventDBImportController(
+            self.dbSessionCreator, statusController, tupleObservable
+        )
         self._loadedObjects.append(eventdbImportController)
 
         # ----------------
         # Initialise the API object that will be shared with other plugins
-        self._api.setup(eventdbController=eventdbController,
-                        eventdbImportController=eventdbImportController,
-                        dbSessionCreator=self.dbSessionCreator,
-                        dbEngine=self.dbEngine)
+        self._api.setup(
+            eventdbController=eventdbController,
+            eventdbImportController=eventdbImportController,
+            dbSessionCreator=self.dbSessionCreator,
+            dbEngine=self.dbEngine,
+        )
 
         # ----------------
         # Start the queue controller
@@ -125,14 +137,14 @@ class LogicEntryHook(PluginLogicEntryHookABC, PluginServerStorageEntryHookABC,
         downloadResource = BasicResource()
         eventsResource = DownloadEventsResource(self.dbSessionCreator)
         # noinspection PyTypeChecker
-        downloadResource.putChild(b'events', eventsResource)
+        downloadResource.putChild(b"events", eventsResource)
 
-        self.platform.addServerResource(b'download', downloadResource)
+        self.platform.addServerResource(b"download", downloadResource)
 
         logger.debug("Started")
 
     def stop(self):
-        """ Stop
+        """Stop
 
         This method is called by the platform to tell the peek app to shutdown and stop
         everything it's doing
@@ -156,7 +168,7 @@ class LogicEntryHook(PluginLogicEntryHookABC, PluginServerStorageEntryHookABC,
 
     @property
     def publishedServerApi(self) -> object:
-        """ Published Server API
+        """Published Server API
 
         :return  class that implements the API that can be used by other Plugins on this
         platform service.

@@ -1,7 +1,10 @@
 import { Injectable } from "@angular/core"
 import { TupleSelector } from "@synerty/vortexjs"
 import { BehaviorSubject, Observable } from "rxjs"
-import { EventDBPropertyShowFilterAsEnum, EventDBPropertyTuple } from "../tuples/EventDBPropertyTuple"
+import {
+    EventDBPropertyShowFilterAsEnum,
+    EventDBPropertyTuple
+} from "../tuples/EventDBPropertyTuple"
 import { EventDBPropertyCriteriaTuple } from "../tuples/EventDBPropertyCriteriaTuple"
 import { EventDBEventTuple } from "../tuples/EventDBEventTuple"
 import { EventDateTimeRangeI, EventDBService } from "../EventDBService"

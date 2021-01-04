@@ -7,7 +7,7 @@ from peek_plugin_eventdb._private.PluginNames import eventdbTuplePrefix
 
 @addTupleType
 class EventDBPropertyValueTuple(Tuple):
-    """ Event DB Property Value Tuple
+    """Event DB Property Value Tuple
 
     This tuple is an option that the user can select for each property.
 
@@ -29,7 +29,8 @@ class EventDBPropertyValueTuple(Tuple):
     comment: The tooltip to display to the user in a UI.
 
     """
-    __tupleType__ = eventdbTuplePrefix + 'EventDBPropertyValueTuple'
+
+    __tupleType__ = eventdbTuplePrefix + "EventDBPropertyValueTuple"
 
     name: str = TupleField()
     value: str = TupleField()

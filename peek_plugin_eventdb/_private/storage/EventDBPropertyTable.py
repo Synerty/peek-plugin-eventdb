@@ -11,8 +11,8 @@ from ...tuples.EventDBPropertyTuple import EventDBPropertyTuple
 
 @addTupleType
 class EventDBPropertyTable(Tuple, DeclarativeBase):
-    __tablename__ = 'EventDBProperty'
-    __tupleType__ = eventdbTuplePrefix + 'EventDBPropertyTable'
+    __tablename__ = "EventDBProperty"
+    __tupleType__ = eventdbTuplePrefix + "EventDBPropertyTable"
 
     SHOW_FILTER_AS_FREE_TEXT = 1
     SHOW_FILTER_SELECT_MANY = 2
@@ -20,8 +20,9 @@ class EventDBPropertyTable(Tuple, DeclarativeBase):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
 
-    modelSetId = Column(Integer, ForeignKey('EventDBModelSet.id', ondelete='CASCADE'),
-                        nullable=False)
+    modelSetId = Column(
+        Integer, ForeignKey("EventDBModelSet.id", ondelete="CASCADE"), nullable=False
+    )
     modelSet = relationship(EventDBModelSetTable)
 
     key = Column(String, nullable=False)

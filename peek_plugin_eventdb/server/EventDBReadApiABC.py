@@ -5,10 +5,9 @@ from rx.subjects import Subject
 
 
 class EventDBReadApiABC(metaclass=ABCMeta):
-
     @abstractmethod
     def newEventsObservable(self, modelSetKey: str) -> Subject:
-        """ Raw Value Update Observable
+        """Raw Value Update Observable
 
         Return an observable that fires with lists of C{EventDBEventTuple} tuples
         containing updates to EventDB values.

@@ -7,7 +7,7 @@ from vortex.handler.TupleDataObservableHandler import TupleSelectorUpdateMapperA
 
 
 class NewEventsTupleSelector(TupleSelector):
-    """ New Events Tuple Selector
+    """New Events Tuple Selector
 
     This is a tuple selector that is only used to notify our mapper below that new
     events have been imported.
@@ -30,13 +30,17 @@ class NewEventsTupleSelector(TupleSelector):
 
 
 class NewEventTSUpdateMapper(TupleSelectorUpdateMapperABC):
-    def mapTupleSelector(self, triggerTupleSelector: TupleSelector,
-                         allTupleSelectors: List[TupleSelector]) -> List[TupleSelector]:
+    def mapTupleSelector(
+        self,
+        triggerTupleSelector: TupleSelector,
+        allTupleSelectors: List[TupleSelector],
+    ) -> List[TupleSelector]:
         if not triggerTupleSelector.name == NewEventsTupleSelector.NAME:
             return []
 
-        eventTss = filter(lambda ts: ts.name == EventDBEventTuple.tupleName(),
-                          allTupleSelectors)
+        eventTss = filter(
+            lambda ts: ts.name == EventDBEventTuple.tupleName(), allTupleSelectors
+        )
 
         updateTs: NewEventsTupleSelector = triggerTupleSelector
         minDate = updateTs.minDate
@@ -44,14 +48,16 @@ class NewEventTSUpdateMapper(TupleSelectorUpdateMapperABC):
 
         results = []
         for tupleSelector in eventTss:
-            newestDateTime = tupleSelector.selector.get('newestDateTime')
-            oldestDateTime = tupleSelector.selector.get('oldestDateTime')
+            newestDateTime = tupleSelector.selector.get("newestDateTime")
+            oldestDateTime = tupleSelector.selector.get("oldestDateTime")
 
-            isMinInRange = (oldestDateTime is None or oldestDateTime <= minDate) \
-                           and (newestDateTime is None or minDate <= newestDateTime)
+            isMinInRange = (oldestDateTime is None or oldestDateTime <= minDate) and (
+                newestDateTime is None or minDate <= newestDateTime
+            )
 
-            isMaxInRange = (oldestDateTime is None or oldestDateTime <= maxDate) \
-                           and (newestDateTime is None or maxDate <= newestDateTime)
+            isMaxInRange = (oldestDateTime is None or oldestDateTime <= maxDate) and (
+                newestDateTime is None or maxDate <= newestDateTime
+            )
 
             if isMinInRange or isMaxInRange:
                 results.append(tupleSelector)

@@ -1,20 +1,20 @@
-import { CommonModule } from "@angular/common";
-import { HttpClientModule } from "@angular/common/http";
-import { FormsModule } from "@angular/forms";
-import { NgModule } from "@angular/core";
-import { RouterModule, Routes } from "@angular/router";
-import { NzTabsModule } from "ng-zorro-antd/tabs";
-import { NzButtonModule } from "ng-zorro-antd/button";
-import { NzIconModule } from "ng-zorro-antd/icon";
-import { NzSwitchModule } from "ng-zorro-antd/switch";
-import { NzSelectModule } from "ng-zorro-antd/select";
-import { NzInputNumberModule } from "ng-zorro-antd/input-number";
-import { NzTableModule } from "ng-zorro-antd/table";
-import { NzBadgeModule } from "ng-zorro-antd/badge";
-import { PlusOutline } from "@ant-design/icons-angular/icons";
-import { EditSettingComponent } from "./edit-setting-table/edit.component";
-import { EventDBComponent } from "./eventdb.component";
-import { StatusComponent } from "./status/status.component";
+import { CommonModule } from "@angular/common"
+import { HttpClientModule } from "@angular/common/http"
+import { FormsModule } from "@angular/forms"
+import { NgModule } from "@angular/core"
+import { RouterModule, Routes } from "@angular/router"
+import { NzTabsModule } from "ng-zorro-antd/tabs"
+import { NzButtonModule } from "ng-zorro-antd/button"
+import { NzIconModule } from "ng-zorro-antd/icon"
+import { NzSwitchModule } from "ng-zorro-antd/switch"
+import { NzSelectModule } from "ng-zorro-antd/select"
+import { NzInputNumberModule } from "ng-zorro-antd/input-number"
+import { NzTableModule } from "ng-zorro-antd/table"
+import { NzBadgeModule } from "ng-zorro-antd/badge"
+import { PlusOutline } from "@ant-design/icons-angular/icons"
+import { EditSettingComponent } from "./edit-setting-table/edit.component"
+import { EventDBComponent } from "./eventdb.component"
+import { StatusComponent } from "./status/status.component"
 import {
     TupleActionPushNameService,
     TupleActionPushService,
@@ -23,31 +23,31 @@ import {
     TupleDataOfflineObserverService,
     TupleOfflineStorageNameService,
     TupleOfflineStorageService,
-} from "@synerty/vortexjs";
+} from "@synerty/vortexjs"
 import {
     eventdbActionProcessorName,
     eventdbFilt,
     eventdbObservableName,
     eventdbTupleOfflineServiceName,
-} from "./PluginNames";
-import { EditPropertyComponent } from "./edit-property-table/edit.component";
+} from "./PluginNames"
+import { EditPropertyComponent } from "./edit-property-table/edit.component"
 
 export function tupleActionPushNameServiceFactory() {
     return new TupleActionPushNameService(
         eventdbActionProcessorName,
         eventdbFilt
-    );
+    )
 }
 
 export function tupleDataObservableNameServiceFactory() {
     return new TupleDataObservableNameService(
         eventdbObservableName,
         eventdbFilt
-    );
+    )
 }
 
 export function tupleOfflineStorageNameServiceFactory() {
-    return new TupleOfflineStorageNameService(eventdbTupleOfflineServiceName);
+    return new TupleOfflineStorageNameService(eventdbTupleOfflineServiceName)
 }
 
 // Define the routes for this Angular module.
@@ -56,7 +56,7 @@ export const pluginRoutes: Routes = [
         path: "",
         component: EventDBComponent,
     },
-];
+]
 
 @NgModule({
     imports: [
@@ -99,4 +99,5 @@ export const pluginRoutes: Routes = [
         EditPropertyComponent,
     ],
 })
-export class EventDBModule {}
+export class EventDBModule {
+}

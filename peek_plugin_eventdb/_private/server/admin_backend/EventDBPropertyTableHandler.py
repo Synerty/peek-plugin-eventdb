@@ -6,7 +6,9 @@ from vortex.handler.TupleDataObservableHandler import TupleDataObservableHandler
 from vortex.sqla_orm.OrmCrudHandler import OrmCrudHandler, OrmCrudHandlerExtension
 
 from peek_plugin_eventdb._private.PluginNames import eventdbFilt
-from peek_plugin_eventdb._private.storage.EventDBPropertyTable import EventDBPropertyTable
+from peek_plugin_eventdb._private.storage.EventDBPropertyTable import (
+    EventDBPropertyTable,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +23,7 @@ class __CrudHandler(OrmCrudHandler):
 
 
 class __ExtUpdateObservable(OrmCrudHandlerExtension):
-    """ Update Observable ORM Crud Extension
+    """Update Observable ORM Crud Extension
 
     This extension is called after events that will alter data,
     it then notifies the observer.
@@ -64,8 +66,9 @@ class __ExtUpdateObservable(OrmCrudHandlerExtension):
 
 # This method creates an instance of the handler class.
 def makeEventDBPropertyTupleHandler(tupleObservable, dbSessionCreator):
-    handler = __CrudHandler(dbSessionCreator, EventDBPropertyTable,
-                            filtKey, retreiveAll=True)
+    handler = __CrudHandler(
+        dbSessionCreator, EventDBPropertyTable, filtKey, retreiveAll=True
+    )
 
     logger.debug("Started")
     handler.addExtension(EventDBPropertyTable, __ExtUpdateObservable(tupleObservable))

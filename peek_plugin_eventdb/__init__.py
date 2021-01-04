@@ -4,25 +4,28 @@ from peek_plugin_base.agent.PluginAgentEntryHookABC import PluginAgentEntryHookA
 from peek_plugin_base.client.PluginClientEntryHookABC import PluginClientEntryHookABC
 from peek_plugin_base.server.PluginLogicEntryHookABC import PluginLogicEntryHookABC
 
-__version__ = '0.0.0'
+__version__ = "0.0.0"
 
 
 def peekLogicEntryHook() -> Type[PluginLogicEntryHookABC]:
     from ._private.server.LogicEntryHook import LogicEntryHook
+
     return LogicEntryHook
 
 
 def peekAgentEntryHook() -> Type[PluginAgentEntryHookABC]:
     from ._private.agent.AgentEntryHook import AgentEntryHook
+
     return AgentEntryHook
 
 
 def peekOfficeEntryHook() -> Type[PluginClientEntryHookABC]:
     from ._private.client.ClientEntryHook import ClientEntryHook
+
     return ClientEntryHook
 
 
 def peekFieldEntryHook() -> Type[PluginClientEntryHookABC]:
     from ._private.client.ClientEntryHook import ClientEntryHook
-    return ClientEntryHook
 
+    return ClientEntryHook

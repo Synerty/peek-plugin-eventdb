@@ -5,7 +5,7 @@ from peek_plugin_eventdb._private.PluginNames import eventdbTuplePrefix
 
 @addTupleType
 class EventDBEventTuple(Tuple):
-    """ Event DB Event Tuple
+    """Event DB Event Tuple
 
     This tuple stores a value of a key in the Event DB database.
 
@@ -14,12 +14,12 @@ class EventDBEventTuple(Tuple):
     value: is the value of this event.
 
     """
-    __tupleType__ = eventdbTuplePrefix + 'EventDBEventTuple'
+
+    __tupleType__ = eventdbTuplePrefix + "EventDBEventTuple"
     __slots__ = ("dateTime", "key", "isAlarm", "value")
 
     @classmethod
     def sqlCoreLoad(cls, row):
-        return EventDBEventTuple(datetime=row.datetime,
-                                 key=row.key,
-                                 isAlarm=row.isAlarm,
-                                 value=row.value)
+        return EventDBEventTuple(
+            datetime=row.datetime, key=row.key, isAlarm=row.isAlarm, value=row.value
+        )

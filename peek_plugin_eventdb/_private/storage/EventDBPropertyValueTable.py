@@ -11,8 +11,8 @@ from ...tuples.EventDBPropertyValueTuple import EventDBPropertyValueTuple
 
 @addTupleType
 class EventDBPropertyValueTable(Tuple, DeclarativeBase):
-    __tablename__ = 'EventDBPropertyValue'
-    __tupleType__ = eventdbTuplePrefix + 'EventDBPropertyValueTable'
+    __tablename__ = "EventDBPropertyValue"
+    __tupleType__ = eventdbTuplePrefix + "EventDBPropertyValueTable"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, nullable=False)
@@ -20,9 +20,10 @@ class EventDBPropertyValueTable(Tuple, DeclarativeBase):
     color = Column(String)
     comment = Column(String)
 
-    propertyId = Column(Integer, ForeignKey('EventDBProperty.id', ondelete='CASCADE'),
-                        nullable=False)
-    property = relationship(EventDBPropertyTable, backref='values')
+    propertyId = Column(
+        Integer, ForeignKey("EventDBProperty.id", ondelete="CASCADE"), nullable=False
+    )
+    property = relationship(EventDBPropertyTable, backref="values")
 
     __table_args__ = (
         Index("idx_EventDBPropVal_name", propertyId, name, unique=True),
@@ -31,8 +32,5 @@ class EventDBPropertyValueTable(Tuple, DeclarativeBase):
 
     def toTuple(self) -> EventDBPropertyValueTuple:
         return EventDBPropertyValueTuple(
-            name=self.name,
-            value=self.value,
-            color=self.color,
-            comment=self.comment
+            name=self.name, value=self.value, color=self.color, comment=self.comment
         )

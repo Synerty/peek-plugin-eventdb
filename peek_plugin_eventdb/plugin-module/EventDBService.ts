@@ -1,8 +1,8 @@
-import {Observable} from "rxjs";
-import {EventDBPropertyCriteriaTuple} from "./tuples/EventDBPropertyCriteriaTuple";
-import {EventDBEventTuple} from "./tuples/EventDBEventTuple";
-import {EventDBPropertyTuple} from "./tuples/EventDBPropertyTuple";
-import {TupleSelector} from "@synerty/vortexjs";
+import { Observable } from "rxjs"
+import { EventDBPropertyCriteriaTuple } from "./tuples/EventDBPropertyCriteriaTuple"
+import { EventDBEventTuple } from "./tuples/EventDBEventTuple"
+import { EventDBPropertyTuple } from "./tuples/EventDBPropertyTuple"
+import { TupleSelector } from "@synerty/vortexjs"
 
 export interface EventDateTimeRangeI {
     oldestDateTime?: Date | null;
@@ -16,7 +16,7 @@ export interface EventDateTimeRangeI {
  *
  */
 export abstract class EventDBService {
-
+    
     /** Property Tuples
      *
      * Return an observable that fires with a list of property tuples.
@@ -24,7 +24,7 @@ export abstract class EventDBService {
      * @param modelSetKey: The model to observe the data from.
      */
     abstract propertyTuples(modelSetKey: string): Observable<EventDBPropertyTuple[]> | null;
-
+    
     /** Event Tuples
      *
      *
@@ -37,8 +37,9 @@ export abstract class EventDBService {
         modelSetKey: string,
         dateTimeRange: EventDateTimeRangeI,
         criteria: EventDBPropertyCriteriaTuple[],
-        alarmsOnly: boolean): Observable<EventDBEventTuple[]> ;
-
+        alarmsOnly: boolean
+    ): Observable<EventDBEventTuple[]> ;
+    
     /** Event Tuples Selector
      *
      * This method will return a tuple selector used to select the data from the
@@ -56,7 +57,8 @@ export abstract class EventDBService {
         modelSetKey: string,
         dateTimeRange: EventDateTimeRangeI,
         criteria: EventDBPropertyCriteriaTuple[],
-        alarmsOnly: boolean): TupleSelector ;
+        alarmsOnly: boolean
+    ): TupleSelector ;
 }
 
 

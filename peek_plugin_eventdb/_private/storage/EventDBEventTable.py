@@ -13,8 +13,8 @@ logger = logging.getLogger(__name__)
 
 @addTupleType
 class EventDBEventTable(Tuple, DeclarativeBase):
-    __tablename__ = 'EventDBEvent'
-    __tupleType__ = eventdbTuplePrefix + 'EventDBEventTable'
+    __tablename__ = "EventDBEvent"
+    __tupleType__ = eventdbTuplePrefix + "EventDBEventTable"
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
 
@@ -26,9 +26,9 @@ class EventDBEventTable(Tuple, DeclarativeBase):
 
     isAlarm = Column(Boolean)
 
-    modelSetId = Column(Integer,
-                        ForeignKey('EventDBModelSet.id', ondelete='CASCADE'),
-                        nullable=False)
+    modelSetId = Column(
+        Integer, ForeignKey("EventDBModelSet.id", ondelete="CASCADE"), nullable=False
+    )
 
     __table_args__ = (
         Index("idx_EventDBEvent_modelSetId_key", modelSetId, key, unique=False),

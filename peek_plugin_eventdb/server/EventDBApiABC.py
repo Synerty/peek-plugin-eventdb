@@ -8,7 +8,7 @@ class EventDBApiABC(metaclass=ABCMeta):
     @property
     @abstractmethod
     def writeApi(self) -> EventDBWriteApiABC:
-        """ EventDB Write API
+        """EventDB Write API
 
         This API is for all the methods that make changes to the EventDB
 
@@ -19,7 +19,7 @@ class EventDBApiABC(metaclass=ABCMeta):
     @property
     @abstractmethod
     def readApi(self) -> EventDBReadApiABC:
-        """ EventDB Read API
+        """EventDB Read API
 
         This API is for all the methods to read changes from the EventDB
 

@@ -30,17 +30,22 @@ class EventDBEventTupleProvider(TuplesProviderABC):
         # sql = self._makeSql(criterias, 0, newestDateTime, oldestDateTime)
         # logger.info(sql)
         logger.debug(tupleSelector.toJsonStr())
-        return (yield runPyInPg(logger,
-                                self._dbSessionCreator,
-                                self._loadInPg,
-                                self._importTuples,
-                                filt=filt,
-                                tupleSelectorStr=tupleSelector.toJsonStr())).encode()
+        return (
+            yield runPyInPg(
+                logger,
+                self._dbSessionCreator,
+                self._loadInPg,
+                self._importTuples,
+                filt=filt,
+                tupleSelectorStr=tupleSelector.toJsonStr(),
+            )
+        ).encode()
 
     @classmethod
     def _importTuples(cls):
         # noinspection PyUnresolvedReferences
         from peek_plugin_eventdb.tuples import EventDBPropertyCriteriaTuple
+
         loadPublicTuples()
 
     @classmethod
@@ -56,31 +61,36 @@ class EventDBEventTupleProvider(TuplesProviderABC):
     def loadTuples(cls, plpy, tupleSelector: TupleSelector):
 
         selector = tupleSelector.selector
-        modelSetKey = selector.get('modelSetKey')
-        singleCriterias = selector.get('singleCriterias', {})
-        multiCriterias = selector.get('multiCriterias', {})
-        newestDateTime = selector.get('newestDateTime')
-        oldestDateTime = selector.get('oldestDateTime')
-        alarmsOnly = selector.get('alarmsOnly')
+        modelSetKey = selector.get("modelSetKey")
+        singleCriterias = selector.get("singleCriterias", {})
+        multiCriterias = selector.get("multiCriterias", {})
+        newestDateTime = selector.get("newestDateTime")
+        oldestDateTime = selector.get("oldestDateTime")
+        alarmsOnly = selector.get("alarmsOnly")
 
         if not modelSetKey:
             raise Exception("modelSetKey is None")
 
         modelSetId = cls.getModelSetId(plpy, modelSetKey)
 
-        sql = cls._makeSql(singleCriterias, multiCriterias,
-                           modelSetId, newestDateTime, oldestDateTime,
-                           alarmsOnly=alarmsOnly)
+        sql = cls._makeSql(
+            singleCriterias,
+            multiCriterias,
+            modelSetId,
+            newestDateTime,
+            oldestDateTime,
+            alarmsOnly=alarmsOnly,
+        )
 
         # TODO, We probably need some pagination.
 
         def convertDate(strIn: str) -> datetime:
-            dateTime, offset = strIn.split('+')
-            if '.' not in dateTime:
-                dateTime += '.000'
+            dateTime, offset = strIn.split("+")
+            if "." not in dateTime:
+                dateTime += ".000"
             if len(offset) == 2:
-                offset += '00'
-            return datetime.strptime('%s+%s' % (dateTime, offset), ISO8601)
+                offset += "00"
+            return datetime.strptime("%s+%s" % (dateTime, offset), ISO8601)
 
         tuples = []
 
@@ -90,18 +100,25 @@ class EventDBEventTupleProvider(TuplesProviderABC):
             if not rows:
                 break
             for row in rows:
-                tuples.append(EventDBEventTuple(dateTime=convertDate(row["dateTime"]),
-                                                key=row["key"],
-                                                value=row["value"]))
+                tuples.append(
+                    EventDBEventTuple(
+                        dateTime=convertDate(row["dateTime"]),
+                        key=row["key"],
+                        value=row["value"],
+                    )
+                )
 
         return tuples
 
     @classmethod
     def getModelSetId(cls, plpy, modelSetKey) -> int:
         # Load in the ModelSet ID
-        sql = """
+        sql = (
+            """
               SELECT id FROM pl_eventdb."EventDBModelSet" where key = '%s'
-              """ % modelSetKey
+              """
+            % modelSetKey
+        )
         rows = plpy.execute(sql, 1)
 
         if not len(rows):
@@ -111,15 +128,24 @@ class EventDBEventTupleProvider(TuplesProviderABC):
         return modelSetId
 
     @classmethod
-    def _makeSql(cls, singleCriterias,
-                 multiCriterias,
-                 modelSetId, newestDateTime, oldestDateTime, alarmsOnly):
+    def _makeSql(
+        cls,
+        singleCriterias,
+        multiCriterias,
+        modelSetId,
+        newestDateTime,
+        oldestDateTime,
+        alarmsOnly,
+    ):
         # Create the basic SQL
-        sql = """
+        sql = (
+            """
             SELECT "dateTime", key, value
             FROM pl_eventdb."EventDBEvent"
             WHERE "modelSetId" = %s
-            """ % modelSetId
+            """
+            % modelSetId
+        )
 
         # Add the Alarms Only
         if alarmsOnly:
@@ -127,12 +153,16 @@ class EventDBEventTupleProvider(TuplesProviderABC):
 
         # Add in the date time criteria
         if newestDateTime:
-            sql += """     AND "dateTime" <= timestamp with time zone '%s' \n""" \
-                   % newestDateTime
+            sql += (
+                """     AND "dateTime" <= timestamp with time zone '%s' \n"""
+                % newestDateTime
+            )
 
         if oldestDateTime:
-            sql += """     AND timestamp with time zone '%s' <= "dateTime" \n""" \
-                   % oldestDateTime
+            sql += (
+                """     AND timestamp with time zone '%s' <= "dateTime" \n"""
+                % oldestDateTime
+            )
 
         for propKey, value in singleCriterias.items():
             if not value:
@@ -140,8 +170,10 @@ class EventDBEventTupleProvider(TuplesProviderABC):
 
             assert isinstance(value, str), "Property value is not a str"
 
-            sql += """     AND "value"->>'%s' ilike '%s' \n""" \
-                   % (propKey, '%' + value + '%')
+            sql += """     AND "value"->>'%s' ilike '%s' \n""" % (
+                propKey,
+                "%" + value + "%",
+            )
 
         for propKey, values in multiCriterias.items():
             if not values:
@@ -155,19 +187,20 @@ class EventDBEventTupleProvider(TuplesProviderABC):
                     quotedVal = int(value)
 
                 except ValueError:
-                    if value.lower() == 'true':
-                        quotedVal = 'true'
+                    if value.lower() == "true":
+                        quotedVal = "true"
 
-                    elif value.lower() == 'false':
-                        quotedVal = 'false'
+                    elif value.lower() == "false":
+                        quotedVal = "false"
 
                     else:
                         quotedVal = '"%s"' % value
 
-                criSql.append("""     "value" @> '{"%s":%s}'::jsonb """
-                              % (propKey, quotedVal))
+                criSql.append(
+                    """     "value" @> '{"%s":%s}'::jsonb """ % (propKey, quotedVal)
+                )
 
-            sql += """     AND (%s) \n""" % '\n OR '.join(criSql)
+            sql += """     AND (%s) \n""" % "\n OR ".join(criSql)
 
         sql += """
                ORDER BY "dateTime" DESC

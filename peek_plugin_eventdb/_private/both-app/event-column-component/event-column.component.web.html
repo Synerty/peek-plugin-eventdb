@@ -1,28 +1,37 @@
-<button nz-button nzType="default" (click)="showModal()">
+<button (click)="showModal()" nz-button nzType="default">
     Columns
 </button>
 
 <nz-modal
+    (nzOnCancel)="onCancelClicked()"
     [(nzVisible)]="isVisible"
-    nzTitle="Events Columns"
     [nzFooter]="modalFooter"
-    (nzOnCancel)="onCancelClicked()">
-
-    <nz-select nzMode="tags" style="width: 100%;" nzPlaceHolder="Tag Mode"
-               [(ngModel)]="selectedProps">
-        <nz-option *ngFor="let prop of allProps" [nzLabel]="prop.name"
-                   [nzValue]="prop"></nz-option>
+    nzTitle="Events Columns"
+>
+    
+    <nz-select
+        [(ngModel)]="selectedProps" nzMode="tags" nzPlaceHolder="Tag Mode"
+        style="width: 100%;"
+    >
+        <nz-option
+            *ngFor="let prop of allProps" [nzLabel]="prop.name"
+            [nzValue]="prop"
+        ></nz-option>
     </nz-select>
 
 </nz-modal>
 
-
 <ng-template #modalFooter>
-    <button nz-button nzType="warning" (click)="resetDefaults()" class="pull-left">
+    <button
+        (click)="resetDefaults()" class="pull-left" nz-button nzType="warning"
+    >
         Reset Defaults
     </button>
-    <button nz-button nzType="default" (click)="onCancelClicked()">Cancel</button>
-    <button nz-button nzType="primary" (click)="onOkClicked()"
-            [nzLoading]="isConfirmLoading">Apply
+    <button (click)="onCancelClicked()" nz-button nzType="default">Cancel
+    </button>
+    <button
+        (click)="onOkClicked()" [nzLoading]="isConfirmLoading" nz-button
+        nzType="primary"
+    >Apply
     </button>
 </ng-template>

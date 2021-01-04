@@ -1,6 +1,15 @@
 import { Component } from "@angular/core"
-import { BalloonMsgService, NgLifeCycleEvents } from "@synerty/peek-plugin-base-js"
-import { extend, TupleDataObserverService, TupleLoader, TupleSelector, VortexService } from "@synerty/vortexjs"
+import {
+    BalloonMsgService,
+    NgLifeCycleEvents
+} from "@synerty/peek-plugin-base-js"
+import {
+    extend,
+    TupleDataObserverService,
+    TupleLoader,
+    TupleSelector,
+    VortexService
+} from "@synerty/vortexjs"
 import { eventdbFilt } from "../PluginNames"
 import { EventDBPropertyTableTuple } from "../tuples/EventDBPropertyTableTuple"
 import { EventDBModelSetTableTuple } from "../tuples/EventDBModelSetTableTuple"

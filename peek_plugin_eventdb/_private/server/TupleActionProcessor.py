@@ -9,5 +9,6 @@ def makeTupleActionProcessorHandler(mainController: MainController):
     processor = TupleActionProcessor(
         tupleActionProcessorName=eventdbActionProcessorName,
         additionalFilt=eventdbFilt,
-        defaultDelegate=mainController)
+        defaultDelegate=mainController,
+    )
     return processor

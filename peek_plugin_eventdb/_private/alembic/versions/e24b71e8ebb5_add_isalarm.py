@@ -9,8 +9,8 @@ Create Date: 2020-07-14 22:24:49.444308
 """
 
 # revision identifiers, used by Alembic.
-revision = 'e24b71e8ebb5'
-down_revision = 'a63487e16375'
+revision = "e24b71e8ebb5"
+down_revision = "a63487e16375"
 branch_labels = None
 depends_on = None
 
@@ -19,8 +19,9 @@ from alembic import op
 
 
 def upgrade():
-    op.add_column('EventDBEvent', sa.Column('isAlarm', sa.Boolean()),
-                  schema='pl_eventdb')
+    op.add_column(
+        "EventDBEvent", sa.Column("isAlarm", sa.Boolean()), schema="pl_eventdb"
+    )
 
 
 def downgrade():

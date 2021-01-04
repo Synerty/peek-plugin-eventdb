@@ -1,23 +1,22 @@
-import {addTupleType, Tuple} from "@synerty/vortexjs";
-import {eventdbTuplePrefix} from "../_private/PluginNames";
-
+import { addTupleType, Tuple } from "@synerty/vortexjs"
+import { eventdbTuplePrefix } from "../_private/PluginNames"
 
 @addTupleType
 export class EventDBEventTuple extends Tuple {
-    public static readonly tupleName = eventdbTuplePrefix + "EventDBEventTuple";
-
+    public static readonly tupleName = eventdbTuplePrefix + "EventDBEventTuple"
+    
     //  The datetime of the event or alarm
-    dateTime: Date;
-
+    dateTime: Date
+    
     //  The unique id of this event / alarm
-    key: string;
-
+    key: string
+    
     //  Is this alarm/event an alarm
-    isAlarm: boolean;
-
+    isAlarm: boolean
+    
     //  A json object storing the alarm / event data
-    value: any;
-
+    value: any
+    
     constructor() {
         super(EventDBEventTuple.tupleName)
     }

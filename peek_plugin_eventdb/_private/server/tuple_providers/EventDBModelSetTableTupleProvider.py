@@ -7,7 +7,9 @@ from vortex.TupleSelector import TupleSelector
 from vortex.handler.TupleDataObservableHandler import TuplesProviderABC
 
 from peek_plugin_base.storage.DbConnection import DbSessionCreator
-from peek_plugin_eventdb._private.storage.EventDBModelSetTable import EventDBModelSetTable
+from peek_plugin_eventdb._private.storage.EventDBModelSetTable import (
+    EventDBModelSetTable,
+)
 
 logger = logging.getLogger(__name__)
 

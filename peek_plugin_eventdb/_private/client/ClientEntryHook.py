@@ -1,12 +1,17 @@
 import logging
 
 from vortex.handler.TupleActionProcessorProxy import TupleActionProcessorProxy
-from vortex.handler.TupleDataObservableProxyHandler import TupleDataObservableProxyHandler
+from vortex.handler.TupleDataObservableProxyHandler import (
+    TupleDataObservableProxyHandler,
+)
 
 from peek_plugin_base.PeekVortexUtil import peekServerName
 from peek_plugin_base.client.PluginClientEntryHookABC import PluginClientEntryHookABC
-from peek_plugin_eventdb._private.PluginNames import eventdbFilt, eventdbObservableName, \
-    eventdbActionProcessorName
+from peek_plugin_eventdb._private.PluginNames import (
+    eventdbFilt,
+    eventdbObservableName,
+    eventdbActionProcessorName,
+)
 from peek_plugin_eventdb._private.storage.DeclarativeBase import loadStorageTuples
 from peek_plugin_eventdb._private.tuples import loadPrivateTuples
 from peek_plugin_eventdb.tuples import loadPublicTuples
@@ -30,14 +35,13 @@ class ClientEntryHook(PluginClientEntryHookABC):
         logger.debug("Loaded")
 
     def start(self):
-
         # ----------------
         # Proxy actions back to the server, we don't process them at all
         self._loadedObjects.append(
             TupleActionProcessorProxy(
                 tupleActionProcessorName=eventdbActionProcessorName,
                 proxyToVortexName=peekServerName,
-                additionalFilt=eventdbFilt
+                additionalFilt=eventdbFilt,
             )
         )
 
@@ -47,20 +51,19 @@ class ClientEntryHook(PluginClientEntryHookABC):
             observableName=eventdbObservableName,
             proxyToVortexName=peekServerName,
             additionalFilt=eventdbFilt,
-            observerName="Proxy to devices"
+            observerName="Proxy to devices",
         )
         self._loadedObjects.append(tupleDataObservableProxyHandler)
 
         # Support file downloads for device updates
         # noinspection PyTypeChecker
         proxyResource = HttpResourceProxy(
-            self.platform.peekServerHost,
-            self.platform.peekServerHttpPort
+            self.platform.peekServerHost, self.platform.peekServerHttpPort
         )
 
         # Matches resource path on server
         # noinspection PyTypeChecker
-        self.platform.addOfficeResource(b'download', proxyResource)
+        self.platform.addOfficeResource(b"download", proxyResource)
 
         logger.debug("Started")
 

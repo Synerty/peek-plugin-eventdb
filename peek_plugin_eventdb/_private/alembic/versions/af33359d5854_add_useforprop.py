@@ -9,8 +9,8 @@ Create Date: 2020-06-04 21:46:35.963318
 """
 
 # revision identifiers, used by Alembic.
-revision = 'af33359d5854'
-down_revision = '4ea424ad3883'
+revision = "af33359d5854"
+down_revision = "4ea424ad3883"
 branch_labels = None
 depends_on = None
 
@@ -19,9 +19,10 @@ from alembic import op
 
 
 def upgrade():
-    op.add_column('EventDBProperty', sa.Column('useForPopup', sa.String()),
-                  schema='pl_eventdb')
+    op.add_column(
+        "EventDBProperty", sa.Column("useForPopup", sa.String()), schema="pl_eventdb"
+    )
 
 
 def downgrade():
-    op.drop_column('EventDBProperty', 'useForPopup', schema='pl_eventdb')
+    op.drop_column("EventDBProperty", "useForPopup", schema="pl_eventdb")

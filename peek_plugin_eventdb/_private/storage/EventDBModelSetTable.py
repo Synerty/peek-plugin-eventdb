@@ -8,8 +8,8 @@ from .DeclarativeBase import DeclarativeBase
 
 @addTupleType
 class EventDBModelSetTable(Tuple, DeclarativeBase):
-    __tablename__ = 'EventDBModelSet'
-    __tupleType__ = eventdbTuplePrefix + 'EventDBModelSetTable'
+    __tablename__ = "EventDBModelSet"
+    __tupleType__ = eventdbTuplePrefix + "EventDBModelSetTable"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     key = Column(String, nullable=False, unique=True)
@@ -20,8 +20,9 @@ class EventDBModelSetTable(Tuple, DeclarativeBase):
 
 
 def getOrCreateEventDBModelSet(session, modelSetKey: str) -> EventDBModelSetTable:
-    qry = session.query(EventDBModelSetTable) \
-        .filter(EventDBModelSetTable.key == modelSetKey)
+    qry = session.query(EventDBModelSetTable).filter(
+        EventDBModelSetTable.key == modelSetKey
+    )
     if not qry.count():
         session.add(EventDBModelSetTable(key=modelSetKey, name=modelSetKey))
         session.commit()

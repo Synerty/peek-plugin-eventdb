@@ -6,9 +6,8 @@ from twisted.internet.defer import Deferred
 
 class EventDBWriteApiABC(metaclass=ABCMeta):
     @abstractmethod
-    def addEvents(self, modelSetKey: str,
-                  eventsEncodedPayload: str) -> Deferred:
-        """ Add Events
+    def addEvents(self, modelSetKey: str, eventsEncodedPayload: str) -> Deferred:
+        """Add Events
 
         Add events to the EventDB
 
@@ -23,7 +22,7 @@ class EventDBWriteApiABC(metaclass=ABCMeta):
 
     @abstractmethod
     def removeEvents(self, modelSetKey: str, eventKeys: List[str]) -> Deferred:
-        """ Remove Events
+        """Remove Events
 
         Remove events from the EventDB
 
@@ -36,9 +35,10 @@ class EventDBWriteApiABC(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def updateAlarmFlags(self, modelSetKey: str, eventKeys: List[str],
-                        alarmFlag: bool) -> Deferred:
-        """ Update Alarm Flag
+    def updateAlarmFlags(
+        self, modelSetKey: str, eventKeys: List[str], alarmFlag: bool
+    ) -> Deferred:
+        """Update Alarm Flag
 
         Change the value of the alarm flag for alarms.
 
@@ -52,9 +52,10 @@ class EventDBWriteApiABC(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def replaceProperties(self, modelSetKey: str,
-                          propertiesEncodedPayload: str) -> Deferred:
-        """ Replace Properties
+    def replaceProperties(
+        self, modelSetKey: str, propertiesEncodedPayload: str
+    ) -> Deferred:
+        """Replace Properties
 
         Create or Replace the properties for a model set of events.
 

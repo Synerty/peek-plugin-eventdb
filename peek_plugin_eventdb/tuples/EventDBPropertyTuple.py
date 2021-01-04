@@ -3,12 +3,14 @@ from typing import Optional, List
 from vortex.Tuple import Tuple, addTupleType, TupleField
 
 from peek_plugin_eventdb._private.PluginNames import eventdbTuplePrefix
-from peek_plugin_eventdb.tuples.EventDBPropertyValueTuple import EventDBPropertyValueTuple
+from peek_plugin_eventdb.tuples.EventDBPropertyValueTuple import (
+    EventDBPropertyValueTuple,
+)
 
 
 @addTupleType
 class EventDBPropertyTuple(Tuple):
-    """ Event DB Property Tuple
+    """Event DB Property Tuple
 
     This tuple stores the name of a property in the alarm / event that the user
     can filter on.
@@ -56,7 +58,8 @@ class EventDBPropertyTuple(Tuple):
     values: EventDBPropertyValueTuple[] | null;
 
     """
-    __tupleType__ = eventdbTuplePrefix + 'EventDBPropertyTuple'
+
+    __tupleType__ = eventdbTuplePrefix + "EventDBPropertyTuple"
 
     SHOW_FILTER_AS_FREE_TEXT = 1
     SHOW_FILTER_SELECT_MANY = 2

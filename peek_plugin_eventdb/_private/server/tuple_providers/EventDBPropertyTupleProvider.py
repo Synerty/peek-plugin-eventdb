@@ -1,6 +1,8 @@
 import logging
 
-from peek_plugin_eventdb._private.storage.EventDBPropertyTable import EventDBPropertyTable
+from peek_plugin_eventdb._private.storage.EventDBPropertyTable import (
+    EventDBPropertyTable,
+)
 from twisted.internet.defer import Deferred
 from vortex.DeferUtil import deferToThreadWrapWithLogger
 from vortex.Payload import Payload

@@ -11,18 +11,18 @@
 $margin: 8px;
 
 .buttons {
-  margin-top: $margin;
-  display: flex;
+    margin-top: $margin;
+    display: flex;
 }
 
 
 .dynamic-buttons > button {
-  margin-right: $margin;
+    margin-right: $margin;
 }
 
 
 .child-menu-items {
-  height: 400px;
-  overflow-y: scroll;
+    height: 400px;
+    overflow-y: scroll;
 }
 
