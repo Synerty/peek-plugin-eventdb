@@ -6,7 +6,7 @@ import {
 } from "@peek/peek_plugin_eventdb/tuples"
 import { DocDbPopupService, DocDbPopupTypeE } from "@peek/peek_core_docdb"
 import { eventdbPluginName } from "@peek/peek_plugin_eventdb/_private/PluginNames"
-import { NgLifeCycleEvents } from "@synerty/peek-plugin-base-js"
+import { NgLifeCycleEvents } from "@synerty/vortexjs"
 import { FilterI } from "../event-filter-component/event-filter.component"
 import { ColumnI } from "../event-column-component/event-column.component"
 

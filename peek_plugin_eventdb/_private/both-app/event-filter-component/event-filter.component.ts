@@ -5,8 +5,7 @@ import {
     EventDBPropertyShowFilterAsEnum,
     EventDBPropertyTuple
 } from "@peek/peek_plugin_eventdb/tuples"
-import { NgLifeCycleEvents } from "@synerty/peek-plugin-base-js"
-import { SerialiseUtil } from "@synerty/vortexjs"
+import { NgLifeCycleEvents, SerialiseUtil } from "@synerty/vortexjs"
 import { BalloonMsgService } from "@synerty/peek-plugin-base-js"
 import { EventDateTimeRangeI } from "@peek/peek_plugin_eventdb"
 

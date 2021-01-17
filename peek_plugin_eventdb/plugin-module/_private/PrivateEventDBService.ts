@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core"
-import { TupleSelector } from "@synerty/vortexjs"
+import { NgLifeCycleEvents, TupleSelector } from "@synerty/vortexjs"
 import { BehaviorSubject, Observable } from "rxjs"
 import {
     EventDBPropertyShowFilterAsEnum,
@@ -10,7 +10,6 @@ import { EventDBEventTuple } from "../tuples/EventDBEventTuple"
 import { EventDateTimeRangeI, EventDBService } from "../EventDBService"
 import { EventDBTupleService } from "./EventDBTupleService"
 import { map } from "rxjs/operators"
-import { NgLifeCycleEvents } from "@synerty/peek-plugin-base-js"
 
 @Injectable()
 export class PrivateEventDBService extends NgLifeCycleEvents

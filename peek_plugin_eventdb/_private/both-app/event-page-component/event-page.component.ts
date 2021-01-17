@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, ViewChild } from "@angular/core"
 import { jsonOrderedStringify } from "@synerty/vortexjs"
-import { NgLifeCycleEvents, HeaderService } from "@synerty/peek-plugin-base-js"
+import { HeaderService } from "@synerty/peek-plugin-base-js"
+import { NgLifeCycleEvents } from "@synerty/vortexjs"
 import { EventDBColumnComponent } from "../event-column-component/event-column.component"
 import { EventDBFilterComponent } from "../event-filter-component/event-filter.component"
 import { ActivatedRoute, Params, Router } from "@angular/router"

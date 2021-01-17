@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core"
 import { EventDBPropertyTuple } from "@peek/peek_plugin_eventdb/tuples"
 import { PrivateEventDBService } from "@peek/peek_plugin_eventdb/_private/PrivateEventDBService"
-import { NgLifeCycleEvents } from "@synerty/peek-plugin-base-js"
+import { NgLifeCycleEvents } from "@synerty/vortexjs"
 import { BalloonMsgService } from "@synerty/peek-plugin-base-js"
 
 export interface ColumnI {
