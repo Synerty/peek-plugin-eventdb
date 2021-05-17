@@ -1,5 +1,6 @@
 <nz-table
-    #eventsTable [nzData]="events"
+    #eventsTable
+    [nzData]="events"
     [nzLoading]="isDataLoading"
     nzPageSize="20"
     nzPaginationPosition="top"
@@ -16,10 +17,10 @@
             [nzSortKey]="'value.' + prop.key"
         >{{ prop.name }}
         </th>
+        <th>Action</th>
     </tr>
     </thead>
     <tbody
-        (click)="showSummaryPopup($event, event)"
         *ngFor="let event of eventsTable.data"
     >
     <tr [ngStyle]="{'background-color': colorValue(event)}">
@@ -34,6 +35,9 @@
         </td>
         <td *ngFor="let prop of displayProps">
             {{displayValue(event, prop)}}
+        </td>
+        <td>
+            <a (click)="showSummaryPopup($event, event)">Info</a>
         </td>
     </tr>
     </tbody>
