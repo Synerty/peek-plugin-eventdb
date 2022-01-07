@@ -17,19 +17,19 @@
         "field",
         "office",
         "admin-doc",
-        "office-doc",
-        "field-doc"
+        "field-doc",
+        "office-doc"
     ],
     "admin-doc": {
         "docDir": "admin-doc",
         "docRst": "index.rst",
         "hasApi": true
     },
-    "office-doc": {
+    "field-doc": {
         "docDir": "both-doc",
         "docRst": "index.rst"
     },
-    "field-doc": {
+        "office-doc": {
         "docDir": "both-doc",
         "docRst": "index.rst"
     },
