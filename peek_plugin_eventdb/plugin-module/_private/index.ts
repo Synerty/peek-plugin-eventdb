@@ -1,1 +1,1 @@
-export * from "./PluginNames"
+export * from "./PluginNames";

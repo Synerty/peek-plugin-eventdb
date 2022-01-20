@@ -1,5 +1,4 @@
 <div class="margin">
-    
     <div nz-row nzGutter="8">
         <!-- Event Filter -->
         <div nz-col nzSm="2">
@@ -9,7 +8,7 @@
                 [modelSetKey]="modelSetKey"
             ></plugin-eventdb-event-filter>
         </div>
-        
+
         <!-- Event List -->
         <div nz-col nzSm="2">
             <plugin-eventdb-event-column
@@ -18,19 +17,20 @@
                 [modelSetKey]="modelSetKey"
             ></plugin-eventdb-event-column>
         </div>
-        
+
         <!-- Event List -->
         <!-- TODO <i nz-icon nzType="download"></i> -->
         <div nz-col nzSm="2">
             <a
-                [href]="downloadUrl" download="peek_events.csv"
+                [href]="downloadUrl"
+                download="peek_events.csv"
                 nz-button
                 nzType="default"
             >
                 Download
             </a>
         </div>
-        
+
         <!-- Color Switch -->
         <div nz-col nzSm="2">
             <nz-switch
@@ -40,7 +40,7 @@
                 nzUnCheckedChildren="Colors"
             ></nz-switch>
         </div>
-        
+
         <!-- Alarms Only Switch -->
         <div nz-col nzSm="2">
             <nz-switch
@@ -50,7 +50,7 @@
                 nzUnCheckedChildren="Alarms Only"
             ></nz-switch>
         </div>
-        
+
         <!-- Live Switch -->
         <div nz-col nzSm="2">
             <nz-switch
@@ -60,14 +60,13 @@
                 nzUnCheckedChildren="Live"
             ></nz-switch>
         </div>
-        
+
         <!-- Notes -->
         <div nz-col nzSm="6">
             A maximum of 5000 Alarms and Events will be loaded.
         </div>
-    
     </div>
-    
+
     <!-- The event list -->
     <div nz-row nzGutter="8">
         <div nz-col nzSpan="24">
@@ -77,6 +76,6 @@
             ></plugin-eventdb-event-list>
         </div>
     </div>
-    
+
     <br />
 </div>

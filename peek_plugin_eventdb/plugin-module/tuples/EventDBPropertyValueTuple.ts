@@ -1,5 +1,5 @@
-import { addTupleType, Tuple } from "@synerty/vortexjs"
-import { eventdbTuplePrefix } from "../_private/PluginNames"
+import { addTupleType, Tuple } from "@synerty/vortexjs";
+import { eventdbTuplePrefix } from "../_private/PluginNames";
 
 /** Event DB Property Value Tuple
  
@@ -14,24 +14,25 @@ import { eventdbTuplePrefix } from "../_private/PluginNames"
  */
 @addTupleType
 export class EventDBPropertyValueTuple extends Tuple {
-    public static readonly tupleName = eventdbTuplePrefix + "EventDBPropertyValueTuple"
-    
+    public static readonly tupleName =
+        eventdbTuplePrefix + "EventDBPropertyValueTuple";
+
     // name: The name of this property value that is displayed to the user.
-    name: string
-    
+    name: string;
+
     // value: The value that matches
     //        EvenDBEventTuple.value[property.key] == propertyValue.value
-    value: string
-    
+    value: string;
+
     // color: If this property has a color then define it here.
     //        the first property value with a color will be applied
     //        ordered by property.order
-    color: string
-    
+    color: string;
+
     // comment: The tooltip to display to the user in a UI.
-    comment: string
-    
+    comment: string;
+
     constructor() {
-        super(EventDBPropertyValueTuple.tupleName)
+        super(EventDBPropertyValueTuple.tupleName);
     }
 }

@@ -29,12 +29,11 @@
         "docDir": "both-doc",
         "docRst": "index.rst"
     },
-        "office-doc": {
+    "office-doc": {
         "docDir": "both-doc",
         "docRst": "index.rst"
     },
-    "logic": {
-    },
+    "logic": {},
     "storage": {
         "alembicDir": "_private/alembic"
     },
@@ -43,8 +42,7 @@
         "appDir": "_private/admin-app",
         "appModule": "eventdb.module#EventDBModule"
     },
-    "agent": {
-    },
+    "agent": {},
     "field": {
         "homeLinkText": "Alarms / Events",
         "showHomeLink": true,
