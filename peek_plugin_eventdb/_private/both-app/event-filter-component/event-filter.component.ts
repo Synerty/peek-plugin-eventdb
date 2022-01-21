@@ -1,3 +1,4 @@
+import { first, takeUntil } from "rxjs/operators";
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { PrivateEventDBService } from "@peek/peek_plugin_eventdb/_private/PrivateEventDBService";
 import {
@@ -107,7 +108,7 @@ export class EventDBFilterComponent
 
         this.eventService
             .propertyTuples(this.modelSetKey)
-            .takeUntil(this.onDestroyEvent)
+            .pipe(takeUntil(this.onDestroyEvent))
             .subscribe((props: EventDBPropertyTuple[]) => {
                 this.allProps = props;
 
@@ -133,7 +134,7 @@ export class EventDBFilterComponent
         );
 
         this.onDestroyEvent
-            .first()
+            .pipe(first())
             .subscribe(() => clearInterval(this.liveUpdateTimer));
     }
 

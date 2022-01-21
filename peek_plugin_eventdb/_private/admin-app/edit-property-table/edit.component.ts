@@ -1,3 +1,4 @@
+import { takeUntil } from "rxjs/operators";
 import { Component } from "@angular/core";
 import { BalloonMsgService } from "@synerty/peek-plugin-base-js";
 import {
@@ -61,7 +62,7 @@ export class EditPropertyComponent extends NgLifeCycleEvents {
         let ts = new TupleSelector(EventDBModelSetTableTuple.tupleName, {});
         this.tupleObserver
             .subscribeToTupleSelector(ts)
-            .takeUntil(this.onDestroyEvent)
+            .pipe(takeUntil(this.onDestroyEvent))
             .subscribe((tuples: EventDBModelSetTableTuple[]) => {
                 this.modelSets = tuples.sort((a, b) =>
                     a.name < b.name ? -1 : a.name > b.name ? 1 : 0

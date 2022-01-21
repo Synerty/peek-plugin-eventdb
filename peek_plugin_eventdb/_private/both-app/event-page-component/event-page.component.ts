@@ -1,3 +1,4 @@
+import { takeUntil } from "rxjs/operators";
 import { AfterViewInit, Component, ViewChild } from "@angular/core";
 import { jsonOrderedStringify, NgLifeCycleEvents } from "@synerty/vortexjs";
 import { HeaderService } from "@synerty/peek-plugin-base-js";
@@ -61,7 +62,7 @@ export class EventDBPageComponent
 
     ngAfterViewInit() {
         this.route.params
-            .takeUntil(this.onDestroyEvent)
+            .pipe(takeUntil(this.onDestroyEvent))
             .subscribe((params: Params) => {
                 let vars = {};
 

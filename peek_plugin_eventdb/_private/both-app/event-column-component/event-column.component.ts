@@ -1,3 +1,4 @@
+import { takeUntil } from "rxjs/operators";
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { EventDBPropertyTuple } from "@peek/peek_plugin_eventdb/tuples";
 import { PrivateEventDBService } from "@peek/peek_plugin_eventdb/_private/PrivateEventDBService";
@@ -62,7 +63,7 @@ export class EventDBColumnComponent
     ngOnInit() {
         this.eventService
             .propertyTuples(this.modelSetKey)
-            .takeUntil(this.onDestroyEvent)
+            .pipe(takeUntil(this.onDestroyEvent))
             .subscribe((props: EventDBPropertyTuple[]) => {
                 this.allProps = props
                     .filter((prop) => prop.useForDisplay)

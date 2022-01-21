@@ -1,6 +1,7 @@
+import { BehaviorSubject, Observable } from "rxjs";
+import { map, takeUntil } from "rxjs/operators";
 import { Injectable } from "@angular/core";
 import { NgLifeCycleEvents, TupleSelector } from "@synerty/vortexjs";
-import { BehaviorSubject, Observable } from "rxjs";
 import {
     EventDBPropertyShowFilterAsEnum,
     EventDBPropertyTuple,
@@ -9,7 +10,6 @@ import { EventDBPropertyCriteriaTuple } from "../tuples/EventDBPropertyCriteriaT
 import { EventDBEventTuple } from "../tuples/EventDBEventTuple";
 import { EventDateTimeRangeI, EventDBService } from "../EventDBService";
 import { EventDBTupleService } from "./EventDBTupleService";
-import { map } from "rxjs/operators";
 
 @Injectable()
 export class PrivateEventDBService
@@ -73,7 +73,7 @@ export class PrivateEventDBService
             Observable<EventDBEventTuple[]>
         >this.tupleService.offlineObserver
             .subscribeToTupleSelector(ts)
-            .takeUntil(this.onDestroyEvent);
+            .pipe(takeUntil(this.onDestroyEvent));
 
         return observable.pipe(
             map((events: EventDBEventTuple[]) => {
@@ -134,7 +134,7 @@ export class PrivateEventDBService
 
         this.tupleService.offlineObserver
             .subscribeToTupleSelector(ts)
-            .takeUntil(this.onDestroyEvent)
+            .pipe(takeUntil(this.onDestroyEvent))
             .subscribe((tuples: EventDBPropertyTuple[]) => {
                 this._propertiesByModelSetKey = {};
                 const dict = this._propertiesByModelSetKey;

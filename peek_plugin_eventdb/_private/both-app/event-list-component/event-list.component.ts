@@ -1,3 +1,4 @@
+import { takeUntil } from "rxjs/operators";
 import { Component, Input, OnInit } from "@angular/core";
 import { PrivateEventDBService } from "@peek/peek_plugin_eventdb/_private/PrivateEventDBService";
 import {
@@ -41,7 +42,7 @@ export class EventDBEventListComponent
     ngOnInit() {
         this.eventService
             .propertyTuples(this.modelSetKey)
-            .takeUntil(this.onDestroyEvent)
+            .pipe(takeUntil(this.onDestroyEvent))
             .subscribe((props: EventDBPropertyTuple[]) => {
                 // sort properties by order.
                 this.props = props.sort((a, b) => a.order - b.order);
