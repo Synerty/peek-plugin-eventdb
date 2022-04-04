@@ -42,7 +42,7 @@
                 <th>Filter</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody *ngIf="isVisible">
             <tr *ngFor="let item of filterTable.data">
                 <td>{{item.name}}</td>
 
