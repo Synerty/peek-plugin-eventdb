@@ -6,16 +6,19 @@ from vortex.handler.TupleDataObservableProxyHandler import (
 )
 
 from peek_plugin_base.PeekVortexUtil import peekServerName
-from peek_plugin_base.client.PluginClientEntryHookABC import PluginClientEntryHookABC
+from peek_plugin_base.client.PluginClientEntryHookABC import (
+    PluginClientEntryHookABC,
+)
 from peek_plugin_eventdb._private.PluginNames import (
     eventdbFilt,
     eventdbObservableName,
     eventdbActionProcessorName,
 )
-from peek_plugin_eventdb._private.storage.DeclarativeBase import loadStorageTuples
+from peek_plugin_eventdb._private.storage.DeclarativeBase import (
+    loadStorageTuples,
+)
 from peek_plugin_eventdb._private.tuples import loadPrivateTuples
 from peek_plugin_eventdb.tuples import loadPublicTuples
-from txhttputil.downloader.HttpResourceProxy import HttpResourceProxy
 
 logger = logging.getLogger(__name__)
 
@@ -57,9 +60,7 @@ class ClientEntryHook(PluginClientEntryHookABC):
 
         # Support file downloads for device updates
         # noinspection PyTypeChecker
-        proxyResource = HttpResourceProxy(
-            self.platform.peekServerHost, self.platform.peekServerHttpPort
-        )
+        proxyResource = self.createProxy()
 
         # Matches resource path on server
         # noinspection PyTypeChecker
