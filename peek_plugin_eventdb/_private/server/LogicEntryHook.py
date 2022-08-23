@@ -1,6 +1,8 @@
 import logging
 
-from peek_plugin_base.server.PluginLogicEntryHookABC import PluginLogicEntryHookABC
+from peek_plugin_base.server.PluginLogicEntryHookABC import (
+    PluginLogicEntryHookABC,
+)
 from peek_plugin_base.server.PluginServerStorageEntryHookABC import (
     PluginServerStorageEntryHookABC,
 )
@@ -17,7 +19,9 @@ from peek_plugin_eventdb._private.server.download_resources.DownloadEventsResour
     DownloadEventsResource,
 )
 from peek_plugin_eventdb._private.storage import DeclarativeBase
-from peek_plugin_eventdb._private.storage.DeclarativeBase import loadStorageTuples
+from peek_plugin_eventdb._private.storage.DeclarativeBase import (
+    loadStorageTuples,
+)
 from peek_plugin_eventdb._private.tuples import loadPrivateTuples
 from peek_plugin_eventdb.tuples import loadPublicTuples
 from txhttputil.site.BasicResource import BasicResource
@@ -38,7 +42,7 @@ class LogicEntryHook(
     PluginServerWorkerEntryHookABC,
 ):
     def __init__(self, *args, **kwargs):
-        """" Constructor """
+        """ " Constructor"""
         # Call the base classes constructor
         PluginLogicEntryHookABC.__init__(self, *args, **kwargs)
 
@@ -98,14 +102,17 @@ class LogicEntryHook(
         # ----------------
         # create the Main Controller
         mainController = MainController(
-            dbSessionCreator=self.dbSessionCreator, tupleObservable=tupleObservable
+            dbSessionCreator=self.dbSessionCreator,
+            tupleObservable=tupleObservable,
         )
 
         self._loadedObjects.append(mainController)
 
         # ----------------
         # Create the Action Processor
-        self._loadedObjects.append(makeTupleActionProcessorHandler(mainController))
+        self._loadedObjects.append(
+            makeTupleActionProcessorHandler(mainController)
+        )
 
         # ----------------
         # Create the EventDB controller
@@ -133,6 +140,7 @@ class LogicEntryHook(
 
         # noinspection PyTypeChecker
         eventdbImportController.setReadApi(self._api.readApi)
+        eventdbImportController.start()
 
         downloadResource = BasicResource()
         eventsResource = DownloadEventsResource(self.dbSessionCreator)

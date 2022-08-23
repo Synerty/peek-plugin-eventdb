@@ -1,9 +1,13 @@
 import logging
+import os
 from datetime import datetime
 from typing import List
+from typing import Optional
 
+import psutil
 import pytz
 from twisted.internet.defer import Deferred, inlineCallbacks
+from twisted.internet.task import LoopingCall
 from vortex.TupleSelector import TupleSelector
 from vortex.handler.TupleDataObservableHandler import TupleDataObservableHandler
 
@@ -33,6 +37,9 @@ logger = logging.getLogger(__name__)
 class EventDBImportController:
     """EventDB Import Controller"""
 
+    MAX_CPU_PERCENTAGE = 50.0
+    NOTIFY_TIME_SECONDS = 5.0
+
     def __init__(
         self,
         dbSessionCreator: DbSessionCreator,
@@ -43,15 +50,58 @@ class EventDBImportController:
         self._statusController = statusController
         self._tupleObservable = tupleObservable
 
+        self._updateSelectorQueue: list[NewEventsTupleSelector] = []
+        self._updateNotifyLoopingCall: Optional[LoopingCall] = None
+
+        self._process = None
+
+    def start(self):
+        assert not self._updateNotifyLoopingCall, "We've been started already"
+        self._process = psutil.Process(os.getpid())
+        self._updateNotifyLoopingCall = LoopingCall(self._batchNotifyUpdates)
+        self._updateNotifyLoopingCall.start(self.NOTIFY_TIME_SECONDS)
+
     def setReadApi(self, readApi: EventDBReadApi):
         self._readApi = readApi
 
     def shutdown(self):
+        if (
+            self._updateNotifyLoopingCall
+            and self._updateNotifyLoopingCall.running
+        ):
+            self._updateNotifyLoopingCall.stop()
+            self._updateNotifyLoopingCall = None
+
+        self._process = None
         self._readApi = None
         self._tupleObservable = None
 
+    def _batchNotifyUpdates(self):
+        """Batch Notify Updates
+
+        PROBLEM: We don't know if any tuple selectors are already running.
+        :return: None
+        """
+        if not self._updateSelectorQueue:
+            return
+
+        num = self._process.cpu_percent()
+        if self.MAX_CPU_PERCENTAGE < num:
+            logger.debug("Skipping this loop, CPU is too high: %s", num)
+            return
+
+        minDate = min([ts.minDate for ts in self._updateSelectorQueue])
+        maxDate = max([ts.maxDate for ts in self._updateSelectorQueue])
+        self._updateSelectorQueue = []
+
+        self._tupleObservable.notifyOfTupleUpdate(
+            NewEventsTupleSelector(minDate, maxDate)
+        )
+
     @inlineCallbacks
-    def importEvents(self, modelSetKey: str, eventsEncodedPayload: str) -> Deferred:
+    def importEvents(
+        self, modelSetKey: str, eventsEncodedPayload: str
+    ) -> Deferred:
         count, maxDate, minDate = yield runPyInPg(
             logger,
             self._dbSessionCreator,
@@ -63,7 +113,7 @@ class EventDBImportController:
 
         # Notify anyone watching the events that new ones have arrived.
         if count:
-            self._tupleObservable.notifyOfTupleUpdate(
+            self._updateSelectorQueue.append(
                 NewEventsTupleSelector(minDate, maxDate)
             )
 
