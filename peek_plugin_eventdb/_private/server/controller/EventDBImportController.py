@@ -85,7 +85,7 @@ class EventDBImportController:
         if not self._updateSelectorQueue:
             return
 
-        num = self._process.cpu_percent()
+        num = 100 - psutil.cpu_times_percent().idle
         if self.MAX_CPU_PERCENTAGE < num:
             logger.debug("Skipping this loop, CPU is too high: %s", num)
             return
