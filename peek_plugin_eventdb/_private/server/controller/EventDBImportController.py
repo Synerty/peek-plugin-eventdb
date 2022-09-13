@@ -4,7 +4,6 @@ from datetime import datetime
 from typing import List
 from typing import Optional
 
-import psutil
 import pytz
 from twisted.internet.defer import Deferred, inlineCallbacks
 from twisted.internet.task import LoopingCall
@@ -13,6 +12,7 @@ from vortex.handler.TupleDataObservableHandler import TupleDataObservableHandler
 
 from peek_plugin_base.storage.DbConnection import DbSessionCreator
 from peek_plugin_base.storage.RunPyInPg import runPyInPg
+from peek_plugin_base.util.PeekPsUtil import PeekPsUtil
 from peek_plugin_eventdb._private.server.EventDBReadApi import EventDBReadApi
 from peek_plugin_eventdb._private.server.controller.AdminStatusController import (
     AdminStatusController,
@@ -57,7 +57,6 @@ class EventDBImportController:
 
     def start(self):
         assert not self._updateNotifyLoopingCall, "We've been started already"
-        self._process = psutil.Process(os.getpid())
         self._updateNotifyLoopingCall = LoopingCall(self._batchNotifyUpdates)
         self._updateNotifyLoopingCall.start(self.NOTIFY_TIME_SECONDS)
 
@@ -85,7 +84,7 @@ class EventDBImportController:
         if not self._updateSelectorQueue:
             return
 
-        num = 100 - psutil.cpu_times_percent().idle
+        num = PeekPsUtil().cpuPercent
         if self.MAX_CPU_PERCENTAGE < num:
             logger.debug("Skipping this loop, CPU is too high: %s", num)
             return
