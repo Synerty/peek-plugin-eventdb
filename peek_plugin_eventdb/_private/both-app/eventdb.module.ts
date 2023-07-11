@@ -2,7 +2,7 @@ import { CommonModule } from "@angular/common";
 import { HttpClientModule } from "@angular/common/http";
 import { FormsModule } from "@angular/forms";
 import { NgModule } from "@angular/core";
-import { RouterModule, Routes } from "@angular/router";
+import { RouterModule, Route, Routes } from "@angular/router";
 import { NzDropDownModule } from "ng-zorro-antd/dropdown";
 import { NzTableModule } from "ng-zorro-antd/table";
 import { NzToolTipModule } from "ng-zorro-antd/tooltip";
