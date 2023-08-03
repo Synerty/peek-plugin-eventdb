@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 @addTupleType
-class EventDBEventTable(Tuple, DeclarativeBase):
+class EventDBEventTable(DeclarativeBase, Tuple):
     __tablename__ = "EventDBEvent"
     __tupleType__ = eventdbTuplePrefix + "EventDBEventTable"
 
