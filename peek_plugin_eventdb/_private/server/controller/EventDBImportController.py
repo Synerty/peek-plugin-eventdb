@@ -10,6 +10,7 @@ from twisted.internet.task import LoopingCall
 from vortex.TupleSelector import TupleSelector
 from vortex.handler.TupleDataObservableHandler import TupleDataObservableHandler
 
+from peek_plugin_base.LoopingCallUtil import peekCatchErrbackWithLogger
 from peek_plugin_base.storage.DbConnection import DbSessionCreator
 from peek_plugin_base.storage.RunPyInPg import runPyInPg
 from peek_plugin_base.util.PeekPsUtil import PeekPsUtil
@@ -75,6 +76,7 @@ class EventDBImportController:
         self._readApi = None
         self._tupleObservable = None
 
+    @peekCatchErrbackWithLogger(logger)
     def _batchNotifyUpdates(self):
         """Batch Notify Updates
 
