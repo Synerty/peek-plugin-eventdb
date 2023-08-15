@@ -14,7 +14,7 @@ from peek_plugin_eventdb._private.storage.EventDBModelSetTable import (
 )
 from peek_plugin_eventdb.server.EventDBReadApiABC import EventDBReadApiABC
 from peek_plugin_eventdb.tuples.EventDBEventTuple import EventDBEventTuple
-from rx.subjects import Subject
+from reactivex.subject import Subject
 from sqlalchemy import select
 from twisted.internet.defer import Deferred
 from vortex.DeferUtil import deferToThreadWrapWithLogger
@@ -30,7 +30,9 @@ class EventDBReadApi(EventDBReadApiABC):
 
         self._newEventsSubject = defaultdict(Subject)
 
-    def setup(self, eventdbController: EventDBController, dbSessionCreator, dbEngine):
+    def setup(
+        self, eventdbController: EventDBController, dbSessionCreator, dbEngine
+    ):
         self._eventdbController = eventdbController
         self._dbSessionCreator = dbSessionCreator
         self._dbEngine = dbEngine

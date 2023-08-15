@@ -25,7 +25,7 @@
         (click)="resetDefaults()"
         class="pull-left"
         nz-button
-        nzType="warning"
+        nzDanger="true"
     >
         Reset Defaults
     </button>
@@ -34,7 +34,7 @@
     </button>
     <button
         (click)="onOkClicked()"
-        [nzLoading]="isConfirmLoading"
+        [nzLoading]="isOkLoading"
         nz-button
         nzType="primary"
     >
