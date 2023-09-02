@@ -1,7 +1,7 @@
 from abc import ABCMeta, abstractmethod
 from typing import List
 
-from rx.subjects import Subject
+from reactivex.subject import Subject
 
 
 class EventDBReadApiABC(metaclass=ABCMeta):

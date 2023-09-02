@@ -60,7 +60,7 @@ export class EventDBColumnComponent
         setTimeout(() => this.applyRouteParams(), 100);
     }
 
-    ngOnInit() {
+    override ngOnInit() {
         this.eventService
             .propertyTuples(this.modelSetKey)
             .pipe(takeUntil(this.onDestroyEvent))

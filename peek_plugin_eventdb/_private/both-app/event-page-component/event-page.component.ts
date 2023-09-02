@@ -1,7 +1,8 @@
 import { takeUntil } from "rxjs/operators";
 import { AfterViewInit, Component, ViewChild } from "@angular/core";
-import { jsonOrderedStringify, NgLifeCycleEvents } from "@synerty/vortexjs";
+import { NgLifeCycleEvents } from "@synerty/vortexjs";
 import { HeaderService } from "@synerty/peek-plugin-base-js";
+import stringify from "json-stringify-deterministic";
 import { EventDBColumnComponent } from "../event-column-component/event-column.component";
 import { EventDBFilterComponent } from "../event-filter-component/event-filter.component";
 import { ActivatedRoute, Params, Router } from "@angular/router";
@@ -60,7 +61,7 @@ export class EventDBPageComponent
         );
     }
 
-    ngAfterViewInit() {
+    override ngAfterViewInit() {
         this.route.params
             .pipe(takeUntil(this.onDestroyEvent))
             .subscribe((params: Params) => {
@@ -111,7 +112,7 @@ export class EventDBPageComponent
         const params = {
             color: this.eventList.colorsEnabled,
             modelSetKey: this.modelSetKey,
-            filter: jsonOrderedStringify(this.eventFilter.paramsForRoute),
+            filter: stringify(this.eventFilter.paramsForRoute),
             columns: this.eventColumns.paramsForRoute,
         };
 

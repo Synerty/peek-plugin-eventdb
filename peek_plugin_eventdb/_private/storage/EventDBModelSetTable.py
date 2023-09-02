@@ -7,7 +7,7 @@ from .DeclarativeBase import DeclarativeBase
 
 
 @addTupleType
-class EventDBModelSetTable(Tuple, DeclarativeBase):
+class EventDBModelSetTable(DeclarativeBase, Tuple):
     __tablename__ = "EventDBModelSet"
     __tupleType__ = eventdbTuplePrefix + "EventDBModelSetTable"
 

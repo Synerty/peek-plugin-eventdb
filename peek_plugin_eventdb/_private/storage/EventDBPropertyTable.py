@@ -10,7 +10,7 @@ from ...tuples.EventDBPropertyTuple import EventDBPropertyTuple
 
 
 @addTupleType
-class EventDBPropertyTable(Tuple, DeclarativeBase):
+class EventDBPropertyTable(DeclarativeBase, Tuple):
     __tablename__ = "EventDBProperty"
     __tupleType__ = eventdbTuplePrefix + "EventDBPropertyTable"
 

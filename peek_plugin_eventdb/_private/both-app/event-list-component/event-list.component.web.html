@@ -2,7 +2,7 @@
     #eventsTable
     [nzData]="events"
     [nzLoading]="isDataLoading"
-    nzPageSize="20"
+    [nzPageSize]="20"
     nzPaginationPosition="top"
     nzShowSizeChanger="true"
     nzSize="small"
@@ -11,10 +11,7 @@
         <tr>
             <th>Date&nbsp;&nbsp;&nbsp;&nbsp;(Loaded {{events.length}})</th>
             <!-- TODO: Enable sorting in nz-zorro 9 -->
-            <th
-                *ngFor="let prop of displayProps"
-                [nzShowSort]="false"
-            >
+            <th *ngFor="let prop of displayProps" [nzShowSort]="false">
                 {{ prop.name }}
             </th>
             <th>Action</th>

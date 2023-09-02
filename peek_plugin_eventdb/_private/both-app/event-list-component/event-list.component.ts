@@ -19,47 +19,45 @@ import { ColumnI } from "../event-column-component/event-column.component";
 })
 export class EventDBEventListComponent
     extends NgLifeCycleEvents
-    implements OnInit {
+    implements OnInit
+{
     @Input("modelSetKey")
     modelSetKey: string;
-    
+
     colorsEnabled: boolean = false;
     events: EventDBEventTuple[] = [];
     props: EventDBPropertyTuple[] = [];
     displayProps: EventDBPropertyTuple[] = [];
     isDataLoading = true;
-    
+
     private unsubEvents = new Subject<void>();
     private lastLoadFingerprint: string = "";
-    
+
     constructor(
         private objectPopupService: DocDbPopupService,
         private eventService: PrivateEventDBService
     ) {
         super();
     }
-    
-    ngOnInit() {
+
+    override ngOnInit() {
         this.eventService
             .propertyTuples(this.modelSetKey)
             .pipe(takeUntil(this.onDestroyEvent))
             .subscribe((props: EventDBPropertyTuple[]) => {
                 // sort properties by order.
-                this.props = props.sort((
-                    a,
-                    b
-                ) => a.order - b.order);
+                this.props = props.sort((a, b) => a.order - b.order);
             });
     }
-    
+
     updateColors(colorsOn: boolean): void {
         this.colorsEnabled = colorsOn;
     }
-    
+
     updateColumn(props: ColumnI) {
         this.displayProps = props.selectedProps;
     }
-    
+
     updateFilter(filter: FilterI) {
         // Create a string representing the last load
         const lastLoadFingerprint = this.eventService
@@ -70,23 +68,21 @@ export class EventDBEventListComponent
                 filter.alarmsOnly
             )
             .toOrderedJsonStr();
-        
+
         // If we have an active subscription and the fingerprint matches, do nothing
-        if (
-            lastLoadFingerprint == this.lastLoadFingerprint
-        ) {
+        if (lastLoadFingerprint == this.lastLoadFingerprint) {
             return;
         }
-        
+
         // record the fingerprint
         this.lastLoadFingerprint = lastLoadFingerprint;
-        
+
         // Apply the update
         this.events = [];
         this.isDataLoading = true;
-        
+
         this.unsubEvents.next();
-        
+
         this.eventService
             .eventTuples(
                 filter.modelSetKey,
@@ -101,23 +97,20 @@ export class EventDBEventListComponent
                 this.isDataLoading = false;
             });
     }
-    
-    displayValue(
-        event: EventDBEventTuple,
-        prop: EventDBPropertyTuple
-    ): string {
+
+    displayValue(event: EventDBEventTuple, prop: EventDBPropertyTuple): string {
         const eventVal = event.value[prop.key];
         return prop.values != null && prop.values.length != 0
             ? prop.rawValToUserVal(eventVal)
             : eventVal;
     }
-    
+
     colorValue(event: EventDBEventTuple): string {
         if (!this.colorsEnabled) return null;
-        
+
         // Stash this value here to improve performance
         if (event["color"] != null) return event["color"];
-        
+
         let color = "";
         for (let prop of this.props) {
             const eventVal = event.value[prop.key];
@@ -127,18 +120,15 @@ export class EventDBEventListComponent
                 break;
             }
         }
-        
+
         event["color"] = color;
         return color;
     }
-    
-    showSummaryPopup(
-        $event: MouseEvent,
-        result: EventDBEventTuple
-    ) {
+
+    showSummaryPopup($event: MouseEvent, result: EventDBEventTuple) {
         const docdbPopupKey = this.getDocDBPopupKey(result);
         if (docdbPopupKey == null) return;
-        
+
         this.objectPopupService.hidePopup(DocDbPopupTypeE.tooltipPopup);
         this.objectPopupService.showPopup(
             true,
@@ -149,7 +139,7 @@ export class EventDBEventListComponent
             docdbPopupKey
         );
     }
-    
+
     private getDocDBPopupKey(event: EventDBEventTuple): string | null {
         for (let prop of this.props) {
             if (prop.useForPopup && event.value[prop.key] != null) {

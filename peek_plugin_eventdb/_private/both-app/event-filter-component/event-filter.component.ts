@@ -100,7 +100,7 @@ export class EventDBFilterComponent
         setTimeout(() => this.applyRouteParams(), 100);
     }
 
-    ngOnInit() {
+    override ngOnInit() {
         this.dateTimeRange = {
             oldestDateTime: this.defaultOldestDateTime(),
             newestDateTime: null,
